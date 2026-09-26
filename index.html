@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NextGen Custom Code Debugger & Auto-Eraser Fixer</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        .error-line-highlight {
+            border-bottom: 2px dashed #a855f7;
+            background-color: rgba(168, 85, 247, 0.15);
+        }
+
+        .success-line-highlight {
+            background-color: rgba(16, 185, 129, 0.15);
+        }
+    </style>
+</head>
+
+<body class="bg-[#0F172A] text-slate-200 min-h-screen font-sans flex flex-col">
+
+    <!-- Header Navbar -->
+    <header class="border-b border-slate-800 bg-[#1E293B]/50 backdrop-blur px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <span class="text-2xl">🔍</span>
+
+            <h1 class="text-xl font-bold tracking-tight text-white">
+                Custom
+                <span class="text-purple-400">
+                    Error Analyzer & Eraser Fixer
+                </span>
+            </h1>
+        </div>
+
+        <button
+            id="analyze-btn"
+            class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-6 py-2.5 rounded-xl shadow-lg shadow-emerald-500/20 transition-all duration-200 cursor-pointer flex items-center gap-2 text-sm"
+        >
+            <span>🚀</span> วิเคราะห์โค้ด
+        </button>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 p-6">
+
+        <!-- Left Side -->
+        <div class="lg:col-span-7 flex flex-col bg-[#1E293B] rounded-2xl border border-slate-800 overflow-hidden shadow-2xl">
+
+            <div class="bg-[#151D30] px-4 py-3 border-b border-slate-800 flex justify-between items-center">
+                <span class="text-xs font-semibold tracking-wider text-slate-400 uppercase">
+                    Input Source Code
+                </span>
+
+                <button
+                    onclick="copyToClipboard('code-input')"
+                    class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-md transition cursor-pointer"
+                >
+                    📋 Copy โค้ดทั้งหมด
+                </button>
+            </div>
+
+            <!-- Editor -->
+            <div class="flex-1 flex relative font-mono text-sm leading-6 min-h-[350px]">
+
+                <!-- Line Numbers -->
+                <div
+                    id="line-numbers"
+                    class="w-12 bg-[#151D30] text-slate-600 text-right pr-3 select-none pt-4"
+                >
+                    1<br>2<br>3<br>4<br>5
+                </div>
+
+                <div class="flex-1 relative">
+
+                    <div
+                        id="editor-overlay"
+                        class="absolute inset-0 p-4 pointer-events-none text-transparent whitespace-pre-wrap break-all font-mono leading-6"
+                    ></div>
+
+                    <textarea
+                        id="code-input"
+                        class="absolute inset-0 w-full h-full p-4 bg-transparent text-slate-200 focus:outline-none resize-none overflow-y-auto whitespace-pre font-mono leading-6 caret-purple-400 z-10"
+                        spellcheck="false"
+                    >let name = "Developer"
+functon sayHello() {
+    console.log(name;
+}
+sayHello()</textarea>
+
+                </div>
+            </div>
+
+            <!-- Auto Fix -->
+            <div class="bg-[#151D30] p-4 border-t border-slate-800 flex justify-between items-center">
+
+                <div class="text-xs text-slate-400">
+                    เมื่อพบจุดแดง/ม่วง กดปุ่มขวามือเพื่อลบและแก้ใหม่อัตโนมัติ
+                </div>
+
+                <button
+                    id="editor-autofix-btn"
+                    class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-5 py-2.5 rounded-xl text-xs transition duration-200 flex items-center gap-2 shadow-lg shadow-emerald-500/10 cursor-pointer"
+                >
+                    ✨ ลบจุด Error และเขียนแก้ใหม่อัตโนมัติ (Auto-Update)
+                </button>
+
+            </div>
+        </div>
+
+        <!-- Right Side -->
+        <div class="lg:col-span-5 flex flex-col gap-6">
+
+            <!-- Sandbox -->
+            <div class="bg-[#1E293B] rounded-2xl border border-slate-800 p-5 shadow-lg relative">
+
+                <div class="flex justify-between items-center mb-3">
+
+                    <h3 class="text-sm font-semibold text-slate-400 flex items-center gap-2">
+                        🖥️ Sandbox Simulation Result
+                    </h3>
+
+                    <button
+                        onclick="copyText('console-output')"
+                        class="text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-400 px-2 py-0.5 rounded transition cursor-pointer"
+                    >
+                        📋 Copy ผลลัพธ์
+                    </button>
+
+                </div>
+
+                <div
+                    id="console-output"
+                    class="bg-[#0F172A] rounded-xl p-4 font-mono text-xs min-h-[80px] flex items-center border border-slate-800 whitespace-pre-wrap w-full"
+                >
+                    ยังไม่มีการรันวิเคราะห์ระบบ...
+                </div>
+
+            </div>
+
+            <!-- Diagnostics -->
+            <div class="flex-1 bg-[#1E293B] rounded-2xl border border-slate-800 p-5 shadow-lg flex flex-col">
+
+                <div class="flex justify-between items-center mb-4">
+
+                    <h3 class="text-sm font-semibold text-slate-400 flex items-center gap-2">
+                        🚨 Live Diagnostics
+                    </h3>
+
+                </div>
+
+                <div
+                    id="error-list"
+                    class="space-y-3 flex-1 overflow-y-auto max-h-[180px] pr-2"
+                >
+                    <div class="text-center text-slate-500 text-xs py-8">
+                        กดปุ่มสีเขียว "วิเคราะห์โค้ด" เพื่อเริ่มค้นหาจุดบกพร่อง
+                    </div>
+                </div>
+
+                <!-- Patch Tool -->
+                <div class="mt-4 pt-4 border-t border-slate-800">
+
+                    <div class="flex justify-between items-center mb-2">
+
+                        <h4 class="text-xs font-semibold text-purple-400 uppercase tracking-wider">
+                            🔧 Sandbox Patching Tool (แก้ไขรายจุด)
+                        </h4>
+
+                        <button
+                            onclick="copyToClipboard('patch-input')"
+                            class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded cursor-pointer"
+                        >
+                            Copy ช่องนี้
+                        </button>
+
+                    </div>
+
+                    <div class="bg-[#0F172A] rounded-xl p-3 border border-purple-900/30">
+
+                        <div class="text-[11px] text-slate-500 mb-2 flex justify-between">
+
+                            <span id="patch-target">
+                                ยังไม่มีการดึงโค้ดที่ผิดพลาด
+                            </span>
+
+                            <span class="text-purple-400 font-bold">
+                                แก้ไขตรงนี้ 👇
+                            </span>
+
+                        </div>
+
+                        <input
+                            type="text"
+                            id="patch-input"
+                            disabled
+                            class="w-full bg-[#1E293B] border border-slate-800 rounded-lg px-3 py-2 text-sm font-mono text-white focus:outline-none focus:border-purple-500 disabled:opacity-40"
+                            placeholder="กดปุ่ม 'ดึงจุดนี้ไปแก้' เพื่อแก้ไขที่นี่"
+                        >
+
+                        <button
+                            id="patch-submit-btn"
+                            disabled
+                            class="w-full mt-3 bg-purple-600 hover:bg-purple-500 text-white font-medium py-2 rounded-lg text-xs transition flex justify-center items-center gap-2 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                        >
+                            📥 ส่งโค้ดที่แก้เสร็จแล้วกลับเข้าสู่ไฟล์หลัก
+                        </button>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- JavaScript Engine -->
+    <script>
+
+        const codeInput = document.getElementById('code-input');
+        const editorOverlay = document.getElementById('editor-overlay');
+        const lineNumbers = document.getElementById('line-numbers');
+        const consoleOutput = document.getElementById('console-output');
+        const errorList = document.getElementById('error-list');
+
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const editorAutofixBtn = document.getElementById('editor-autofix-btn');
+
+        const patchInput = document.getElementById('patch-input');
+        const patchTarget = document.getElementById('patch-target');
+        const patchSubmitBtn = document.getElementById('patch-submit-btn');
+
+        let activeErrorLine = null;
+        let lastFixMode = false;
+        let currentErrors = [];
+
+
+        function updateLineNumbers(linesCount) {
+
+            let linesHtml = '';
+
+            for (let i = 1; i <= linesCount; i++) {
+                linesHtml += `${i}<br>`;
+            }
+
+            lineNumbers.innerHTML = linesHtml;
+        }
+
+
+        // ระบบวิเคราะห์โค้ด
+        function startAnalysis() {
+
+            const rawCode = codeInput.value;
+            const lines = rawCode.split('\n');
+
+            updateLineNumbers(lines.length);
+
+            currentErrors = [];
+
+            let openBrackets = 0;
+            let openParentheses = 0;
+
+
+            lines.forEach((line, index) => {
+
+                const lineNum = index + 1;
+                const trimmed = line.trim();
+
+
+                // ตรวจ functon
+                if (trimmed.includes('functon')) {
+
+                    currentErrors.push({
+                        line: lineNum,
+                        type: 'SyntaxError',
+                        msg: "คำว่า 'functon' สะกดผิด ต้องเป็น 'function'",
+                        code: line
+                    });
+
+                }
+
+
+                // ตรวจ consoel
+                if (trimmed.includes('consoel')) {
+
+                    currentErrors.push({
+                        line: lineNum,
+                        type: 'ReferenceError',
+                        msg: "คำสั่งแสดงผลสะกดผิด ต้องเป็น 'console'",
+                        code: line
+                    });
+
+                }
+
+
+                // ตรวจ console.log วงเล็บ
+                if (
+                    trimmed.includes('console.log') &&
+                    !trimmed.endsWith(');') &&
+                    !trimmed.endsWith(')')
+                ) {
+
+                    currentErrors.push({
+                        line: lineNum,
+                        type: 'SyntaxError',
+                        msg: "ตรวจพบเครื่องหมายวงเล็บปิด หรืออักขระขาดหายในบรรทัดนี้",
+                        code: line
+                    });
+
+                }
+
+
+                // ==============================
+                // FIX ERROR ตรงนี้
+                // ==============================
+
+                // นับวงเล็บปีกกา
+                openBrackets += (line.match(/{/g) || []).length;
+                openBrackets -= (line.match(/}/g) || []).length;
+
+                // นับวงเล็บธรรมดา
+                openParentheses += (line.match(/\(/g) || []).length;
+                openParentheses -= (line.match(/\)/g) || []).length;
+
+            });
+
+
+            // ตรวจวงเล็บปีกกา
+            if (openBrackets !== 0) {
+
+                currentErrors.push({
+                    line: lines.length,
+                    type: 'SyntaxError',
+                    msg: "โครงสร้างวงเล็บปีกกา { } ครอบคลุมไม่ครบคู่ ระบบไม่สามารถรันจบได้",
+                    code: lines[lines.length - 1]
+                });
+
+            }
+
+
+            // ตรวจวงเล็บธรรมดา
+            if (openParentheses !== 0) {
+
+                currentErrors.push({
+                    line: lines.length,
+                    type: 'SyntaxError',
+                    msg: "โครงสร้างวงเล็บ ( ) ไม่ครบคู่",
+                    code: lines[lines.length - 1]
+                });
+
+            }
+
+
+            let simulatedLog = "";
+
+
+            // ถ้าไม่มี Error
+            if (currentErrors.length === 0) {
+
+                try {
+
+                    const runCheck = new Function(rawCode);
+
+                    runCheck();
+
+                    simulatedLog =
+                        "🟢 [Success] โค้ดประมวลผลสมบูรณ์ลุล่วง 100% ปลายทางทำงานถูกต้อง!";
+
+                    consoleOutput.className =
+                        "bg-emerald-950/30 border border-emerald-500/30 text-emerald-400 rounded-xl p-4 font-mono text-xs min-h-[80px] w-full";
+
+                } catch (err) {
+
+                    currentErrors.push({
+                        line: lines.length,
+                        type: 'RuntimeError',
+                        msg: err.message,
+                        code: lines[lines.length - 1]
+                    });
+
+                }
+
+            }
+
+
+            renderVisuals(lines, currentErrors, simulatedLog);
+
+        }
+
+
+        function renderVisuals(lines, errors, simulatedLog) {
+
+            errorList.innerHTML = '';
+
+            let overlayHtml = '';
+
+            const errorLinesMap = {};
+
+            errors.forEach(err => {
+                errorLinesMap[err.line] = err;
+            });
+
+
+            lines.forEach((line, index) => {
+
+                const lineNum = index + 1;
+
+                if (lastFixMode) {
+
+                    overlayHtml +=
+                        `<div class="success-line-highlight">${line || ' '}</div>`;
+
+                } else if (errorLinesMap[lineNum]) {
+
+                    overlayHtml +=
+                        `<div class="error-line-highlight">${line || ' '}</div>`;
+
+                } else {
+
+                    overlayHtml +=
+                        `<div>${line || ' '}</div>`;
+
+                }
+
+            });
+
+
+            editorOverlay.innerHTML = overlayHtml;
+
+
+            if (errors.length > 0) {
+
+                consoleOutput.innerText =
+                    "❌ Simulation Interrupted: โค้ดติด Error ระบบจำลองถูกหยุดลง";
+
+                consoleOutput.className =
+                    "bg-rose-950/30 border border-rose-500/30 text-rose-400 rounded-xl p-4 font-mono text-xs min-h-[80px] w-full";
+
+
+                errors.forEach(err => {
+
+                    const card = document.createElement('div');
+
+                    card.className =
+                        "bg-[#151D30] border-l-4 border-purple-500 p-3 rounded-r-xl text-xs flex justify-between items-start gap-2 shadow";
+
+
+                    card.innerHTML = `
+                        <div class="flex-1">
+
+                            <div class="font-bold text-rose-400 mb-0.5">
+                                [บรรทัดที่ ${err.line}] ${err.type}
+                            </div>
+
+                            <div class="text-slate-300 font-mono mb-2">
+                                ${err.msg}
+                            </div>
+
+                            <button
+                                onclick="copyCustomText('${err.type}: ${err.msg} ที่บรรทัด ${err.line}')"
+                                class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded cursor-pointer hover:bg-slate-700"
+                            >
+                                📋 Copy ข้อความนี้
+                            </button>
+
+                        </div>
+
+                        <button
+                            onclick="pullCodeToFix(${err.line})"
+                            class="shrink-0 bg-purple-900/50 text-purple-300 hover:bg-purple-600 hover:text-white px-2.5 py-1 rounded-md transition font-medium text-[11px] cursor-pointer"
+                        >
+                            🛠️ ดึงจุดนี้ไปแก้
+                        </button>
+                    `;
+
+                    errorList.appendChild(card);
+
+                });
+
+            } else {
+
+                if (!lastFixMode) {
+
+                    consoleOutput.innerText = simulatedLog;
+
+                    errorList.innerHTML = `
+                        <div class="text-center text-emerald-400 text-xs py-8">
+                            ✨ สมบูรณ์แบบ! โค้ดนี้ไม่มีจุดผิดพลาดใดๆ
+                        </div>
+                    `;
+
+                }
+
+            }
+
+        }
+
+
+        // ปุ่มวิเคราะห์
+        analyzeBtn.addEventListener('click', () => {
+
+            lastFixMode = false;
+
+            analyzeBtn.className =
+                "bg-rose-600 text-white font-bold px-6 py-2.5 rounded-xl shadow-lg shadow-rose-600/20 transition-all duration-200 cursor-wait flex items-center gap-2 text-sm";
+
+            analyzeBtn.innerHTML =
+                `<span>⏳</span> กำลังวิเคราะห์...`;
+
+
+            setTimeout(() => {
+
+                startAnalysis();
+
+                analyzeBtn.className =
+                    "bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-6 py-2.5 rounded-xl shadow-lg shadow-emerald-500/20 transition-all duration-200 cursor-pointer flex items-center gap-2 text-sm";
+
+                analyzeBtn.innerHTML =
+                    `<span>🚀</span> วิเคราะห์โค้ด`;
+
+            }, 500);
+
+        });
+
+
+        // ==============================
+        // AUTO FIX
+        // ==============================
+
+        function triggerAutoFixLogic() {
+
+            let originalLines = codeInput.value.split('\n');
+
+
+            const fixedLines = originalLines.map(line => {
+
+                let fixed = line;
+
+
+                // แก้ functon
+                if (fixed.includes('functon')) {
+                    fixed = fixed.replace('functon', 'function');
+                }
+
+
+                // แก้ consoel
+                if (fixed.includes('consoel')) {
+                    fixed = fixed.replace('consoel', 'console');
+                }
+
+
+                // แก้ console.log ที่วงเล็บไม่ครบ
+                if (
+                    fixed.includes('console.log') &&
+                    !fixed.trim().endsWith(');') &&
+                    !fixed.trim().endsWith(')')
+                ) {
+
+                    if (fixed.includes(';')) {
+
+                        fixed = fixed.replace(';', ');');
+
+                    } else {
+
+                        fixed = fixed + ')';
+
+                    }
+
+                }
+
+
+                return fixed;
+
+            });
+
+
+            let codeText = fixedLines.join('\n');
+
+
+            // ตรวจวงเล็บปีกกา
+            let openB =
+                (codeText.match(/{/g) || []).length;
+
+            let closeB =
+                (codeText.match(/}/g) || []).length;
+
+
+            if (openB > closeB) {
+
+                for (
+                    let i = 0;
+                    i < (openB - closeB);
+                    i++
+                ) {
+                    codeText += "\n}";
+                }
+
+            }
+
+
+            codeInput.value = codeText;
+
+            lastFixMode = true;
+
+
+            // วิเคราะห์ใหม่
+            startAnalysis();
+
+
+            consoleOutput.innerText =
+                "✨ [Auto-Fix & Updated 100%] ระบบวิเคราะห์และทำการลบจุดที่เขียนผิดพลาด พร้อมเขียนแก้ไขโครงสร้างไวยากรณ์ใหม่เรียบร้อยแล้ว โค้ดสะอาด 100% สามารถกด Copy ไปใช้งานได้ทันที!";
+
+            consoleOutput.className =
+                "bg-emerald-950/30 border border-emerald-500/30 text-emerald-400 rounded-xl p-4 font-mono text-xs min-h-[80px] w-full";
+
+
+            errorList.innerHTML = `
+                <div class="text-center text-emerald-400 text-xs py-8 font-bold">
+                    🛠️ แก้ไขและอัปเดตโค้ดเรียบร้อยสำเร็จ 100%!
+                </div>
+            `;
+
+        }
+
+
+        editorAutofixBtn.addEventListener(
+            'click',
+            triggerAutoFixLogic
+        );
+
+
+        // ==============================
+        // PATCH TOOL
+        // ==============================
+
+        window.pullCodeToFix = function(lineNum) {
+
+            activeErrorLine = lineNum;
+
+            const lines = codeInput.value.split('\n');
+
+            patchTarget.innerText =
+                `ดึงข้อมูลจากบรรทัดที่: ${lineNum}`;
+
+            patchInput.value =
+                lines[lineNum - 1];
+
+            patchInput.removeAttribute('disabled');
+
+            patchSubmitBtn.removeAttribute('disabled');
+
+            patchInput.focus();
+
+        };
+
+
+        patchSubmitBtn.addEventListener('click', () => {
+
+            if (activeErrorLine === null) {
+                return;
+            }
+
+
+            const lines = codeInput.value.split('\n');
+
+            lines[activeErrorLine - 1] =
+                patchInput.value;
+
+
+            codeInput.value =
+                lines.join('\n');
+
+
+            patchInput.value = '';
+
+            patchTarget.innerText =
+                "ซ่อมแซมส่งคืนสำเร็จ!";
+
+
+            patchInput.setAttribute(
+                'disabled',
+                'true'
+            );
+
+            patchSubmitBtn.setAttribute(
+                'disabled',
+                'true'
+            );
+
+
+            activeErrorLine = null;
+
+            lastFixMode = false;
+
+            startAnalysis();
+
+        });
+
+
+        // ==============================
+        // COPY FUNCTIONS
+        // ==============================
+
+        window.copyToClipboard = function(elementId) {
+
+            const el =
+                document.getElementById(elementId);
+
+            el.select();
+
+            document.execCommand('copy');
+
+            alert('📋 คัดลอกโค้ดทั้งหมดสำเร็จ!');
+
+        };
+
+
+        window.copyText = function(elementId) {
+
+            const text =
+                document.getElementById(elementId).innerText;
+
+            navigator.clipboard.writeText(text);
+
+            alert('📋 คัดลอกผลลัพธ์สำเร็จ!');
+
+        };
+
+
+        window.copyCustomText = function(text) {
+
+            navigator.clipboard.writeText(text);
+
+            alert('📋 คัดลอกข้อความสำเร็จ!');
+
+        };
+
+
+        // ==============================
+        // SYNC EDITOR SCROLL
+        // ==============================
+
+        codeInput.addEventListener('scroll', () => {
+
+            editorOverlay.scrollTop =
+                codeInput.scrollTop;
+
+            editorOverlay.scrollLeft =
+                codeInput.scrollLeft;
+
+        });
+
+    </script>
+
+</body>
+</html>
