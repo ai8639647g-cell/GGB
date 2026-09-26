@@ -1,0 +1,1585 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CYBER SLAYER 3D - Zombie Apocalypse</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Prompt:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Three.js -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #ff0055;
+            --secondary: #00ffcc;
+            --bg-dark: #0a0a12;
+            --panel-bg: rgba(15, 15, 30, 0.85);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: var(--bg-dark);
+            font-family: 'Prompt', sans-serif;
+            color: #fff;
+        }
+
+        /* =========================
+           LOGIN
+        ========================= */
+
+        #login-screen {
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(circle at center, #1a0b2e 0%, #05020a 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            transition: opacity 0.8s ease;
+        }
+
+        .login-box {
+            width: min(400px, 90%);
+            padding: 40px;
+            border-radius: 16px;
+            border: 2px solid var(--primary);
+            background: var(--panel-bg);
+            box-shadow:
+                0 0 30px rgba(255, 0, 85, 0.3),
+                inset 0 0 15px rgba(255, 0, 85, 0.1);
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .login-box h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #fff;
+            text-shadow:
+                0 0 10px var(--primary),
+                0 0 20px var(--primary);
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--secondary);
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            user-select: text;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+        }
+
+        .btn-start {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(45deg, var(--primary), #cc0044);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 0, 85, 0.4);
+            transition: 0.2s;
+        }
+
+        .btn-start:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 0, 85, 0.6);
+        }
+
+        /* =========================
+           GAME
+        ========================= */
+
+        #game-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: none;
+        }
+
+        #canvas-holder {
+            width: 100%;
+            height: 100%;
+        }
+
+        #canvas-holder canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* =========================
+           HUD
+        ========================= */
+
+        .hud-panel {
+            position: absolute;
+            padding: 20px;
+            pointer-events: none;
+            font-family: 'Orbitron', sans-serif;
+            z-index: 10;
+        }
+
+        .hud-top-left {
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px 25px;
+            border-left: 5px solid var(--secondary);
+            border-radius: 0 8px 8px 0;
+        }
+
+        .player-name {
+            font-size: 1.2rem;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .hp-bar-container {
+            width: 200px;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        #hp-bar {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #ff0055, #ff5500);
+            transition: width 0.2s;
+        }
+
+        .hud-top-right {
+            top: 20px;
+            right: 20px;
+            text-align: right;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px 25px;
+            border-right: 5px solid var(--primary);
+            border-radius: 8px 0 0 8px;
+        }
+
+        .score-title {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        #score-val {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--secondary);
+            text-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+        }
+
+        /* =========================
+           LEADERBOARD
+        ========================= */
+
+        .leaderboard-box {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: var(--panel-bg);
+            border: 1px solid rgba(0, 255, 204, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            width: 250px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+        }
+
+        .leaderboard-box h3 {
+            font-size: 0.9rem;
+            color: var(--secondary);
+            margin-bottom: 10px;
+            border-bottom: 1px solid rgba(0, 255, 204, 0.2);
+            padding-bottom: 5px;
+        }
+
+        .leaderboard-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* =========================
+           GAME OVER
+        ========================= */
+
+        #game-over-screen {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 2, 10, 0.85);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            text-align: center;
+        }
+
+        #game-over-screen h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4rem;
+            color: var(--primary);
+            text-shadow: 0 0 20px var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .btn-restart {
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: transparent;
+            border: 2px solid var(--secondary);
+            color: var(--secondary);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        .btn-restart:hover {
+            background: var(--secondary);
+            color: #000;
+            box-shadow: 0 0 15px var(--secondary);
+        }
+
+        /* =========================
+           CONTROLS
+        ========================= */
+
+        .controls-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.5;
+            z-index: 10;
+        }
+
+        @media (max-width: 600px) {
+            .login-box {
+                padding: 25px;
+            }
+
+            .login-box h1 {
+                font-size: 1.8rem;
+            }
+
+            .leaderboard-box {
+                width: 180px;
+                right: 10px;
+                bottom: 10px;
+            }
+
+            .controls-hint {
+                left: 10px;
+                bottom: 10px;
+                font-size: 0.7rem;
+            }
+
+            .hud-top-left {
+                left: 10px;
+                top: 10px;
+                padding: 10px 15px;
+            }
+
+            .hud-top-right {
+                right: 10px;
+                top: 10px;
+                padding: 10px 15px;
+            }
+
+            .hp-bar-container {
+                width: 130px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =========================
+         LOGIN
+    ========================= -->
+
+    <div id="login-screen">
+        <div class="login-box">
+            <h1>CYBER SLAYER</h1>
+
+            <div class="input-group">
+                <label for="username-input">
+                    ชื่อผู้เล่น (PLAYER NAME)
+                </label>
+
+                <input
+                    type="text"
+                    id="username-input"
+                    value="Slayer_X"
+                    maxlength="12"
+                    autocomplete="off"
+                >
+            </div>
+
+            <button class="btn-start" id="start-button">
+                ENTER BATTLE
+            </button>
+        </div>
+    </div>
+
+
+    <!-- =========================
+         GAME
+    ========================= -->
+
+    <div id="game-container">
+
+        <div id="canvas-holder"></div>
+
+        <!-- HUD -->
+        <div class="hud-panel hud-top-left">
+            <div class="player-name" id="hud-player-name">
+                Player
+            </div>
+
+            <div class="hp-bar-container">
+                <div id="hp-bar"></div>
+            </div>
+        </div>
+
+
+        <div class="hud-panel hud-top-right">
+            <div class="score-title">
+                ZOMBIES KILLED
+            </div>
+
+            <div id="score-val">
+                0000
+            </div>
+        </div>
+
+
+        <!-- Controls -->
+        <div class="controls-hint">
+            <strong>วิธีเล่น:</strong><br>
+            เดิน: W, A, S, D<br>
+            ลูกศรก็ใช้ได้<br>
+            ฟันดาบ: SPACEBAR
+        </div>
+
+
+        <!-- Leaderboard -->
+        <div class="leaderboard-box">
+            <h3>TOP SURVIVORS</h3>
+
+            <div id="leaderboard-list">
+
+                <div class="leaderboard-row">
+                    <span>1. CyberGamer</span>
+                    <span>4,200</span>
+                </div>
+
+                <div class="leaderboard-row">
+                    <span>2. NeoBlade</span>
+                    <span>2,800</span>
+                </div>
+
+                <div class="leaderboard-row">
+                    <span id="lbl-my-pos">
+                        3. Player
+                    </span>
+
+                    <span id="lbl-my-score">
+                        0
+                    </span>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         GAME OVER
+    ========================= -->
+
+    <div id="game-over-screen">
+
+        <h2>YOU DIED</h2>
+
+        <p>
+            คุณถูกซอมบี้รุมกัดจนสิ้นชีพ!
+        </p>
+
+        <button class="btn-restart" id="restart-button">
+            TRY AGAIN
+        </button>
+
+    </div>
+
+
+    <!-- =========================
+         GAME JAVASCRIPT
+    ========================= -->
+
+    <script>
+        "use strict";
+
+        /* =========================================
+           GAME VARIABLES
+        ========================================= */
+
+        let scene;
+        let camera;
+        let renderer;
+
+        let player;
+        let sword;
+
+        let zombies = [];
+        let bloodParticles = [];
+
+        let keys = {};
+
+        let score = 0;
+        let playerHp = 100;
+
+        let isGameOver = false;
+        let isAttacking = false;
+
+        let attackCooldown = 0;
+
+        let pName = "Player";
+
+        let spawnTimer = null;
+        let animationStarted = false;
+
+
+        /* =========================================
+           DOM ELEMENTS
+        ========================================= */
+
+        const loginScreen =
+            document.getElementById("login-screen");
+
+        const gameContainer =
+            document.getElementById("game-container");
+
+        const usernameInput =
+            document.getElementById("username-input");
+
+        const hudPlayerName =
+            document.getElementById("hud-player-name");
+
+        const hpBar =
+            document.getElementById("hp-bar");
+
+        const scoreVal =
+            document.getElementById("score-val");
+
+        const myPosition =
+            document.getElementById("lbl-my-pos");
+
+        const myScore =
+            document.getElementById("lbl-my-score");
+
+        const gameOverScreen =
+            document.getElementById("game-over-screen");
+
+
+        /* =========================================
+           START GAME
+        ========================================= */
+
+        function startGame() {
+
+            const input =
+                usernameInput.value.trim();
+
+            if (input.length > 0) {
+                pName = input;
+            } else {
+                pName = "Player";
+            }
+
+            hudPlayerName.innerText = pName;
+            myPosition.innerText = "3. " + pName;
+
+            loginScreen.style.opacity = "0";
+
+            setTimeout(() => {
+
+                loginScreen.style.display = "none";
+                gameContainer.style.display = "block";
+
+                init3D();
+
+                if (!animationStarted) {
+                    animationStarted = true;
+                    animate();
+                }
+
+            }, 800);
+        }
+
+
+        /* =========================================
+           INITIALIZE THREE.JS
+        ========================================= */
+
+        function init3D() {
+
+            /* Scene */
+
+            scene = new THREE.Scene();
+
+            scene.background =
+                new THREE.Color(0x05050d);
+
+            scene.fog =
+                new THREE.FogExp2(
+                    0x05050d,
+                    0.035
+                );
+
+
+            /* Camera */
+
+            camera =
+                new THREE.PerspectiveCamera(
+                    60,
+                    window.innerWidth /
+                    window.innerHeight,
+                    0.1,
+                    1000
+                );
+
+            camera.position.set(
+                0,
+                12,
+                12
+            );
+
+            camera.lookAt(
+                0,
+                0,
+                0
+            );
+
+
+            /* Renderer */
+
+            renderer =
+                new THREE.WebGLRenderer({
+                    antialias: true
+                });
+
+            renderer.setPixelRatio(
+                Math.min(window.devicePixelRatio, 2)
+            );
+
+            renderer.setSize(
+                window.innerWidth,
+                window.innerHeight
+            );
+
+            renderer.shadowMap.enabled = true;
+
+            renderer.shadowMap.type =
+                THREE.PCFSoftShadowMap;
+
+
+            const holder =
+                document.getElementById(
+                    "canvas-holder"
+                );
+
+            holder.innerHTML = "";
+
+            holder.appendChild(
+                renderer.domElement
+            );
+
+
+            /* =====================================
+               LIGHTING
+            ===================================== */
+
+            const ambientLight =
+                new THREE.AmbientLight(
+                    0x111122,
+                    1.5
+                );
+
+            scene.add(ambientLight);
+
+
+            const dirLight =
+                new THREE.DirectionalLight(
+                    0xff0055,
+                    1
+                );
+
+            dirLight.position.set(
+                10,
+                20,
+                10
+            );
+
+            dirLight.castShadow = true;
+
+            scene.add(dirLight);
+
+
+            const pointLight =
+                new THREE.PointLight(
+                    0x00ffcc,
+                    2,
+                    35
+                );
+
+            pointLight.position.set(
+                0,
+                5,
+                0
+            );
+
+            scene.add(pointLight);
+
+
+            /* =====================================
+               FLOOR
+            ===================================== */
+
+            const floorGeo =
+                new THREE.PlaneGeometry(
+                    100,
+                    100
+                );
+
+            const floorMat =
+                new THREE.MeshStandardMaterial({
+                    color: 0x0a0a14,
+                    roughness: 0.8
+                });
+
+            const floor =
+                new THREE.Mesh(
+                    floorGeo,
+                    floorMat
+                );
+
+            floor.rotation.x =
+                -Math.PI / 2;
+
+            floor.receiveShadow = true;
+
+            scene.add(floor);
+
+
+            /* Grid */
+
+            const grid =
+                new THREE.GridHelper(
+                    100,
+                    50,
+                    0x00ffcc,
+                    0x112233
+                );
+
+            grid.position.y = 0.01;
+
+            scene.add(grid);
+
+
+            /* =====================================
+               PLAYER
+            ===================================== */
+
+            const playerGeo =
+                new THREE.BoxGeometry(
+                    1,
+                    2,
+                    1
+                );
+
+            const playerMat =
+                new THREE.MeshStandardMaterial({
+                    color: 0x0055ff,
+                    emissive: 0x002255,
+                    roughness: 0.5
+                });
+
+            player =
+                new THREE.Mesh(
+                    playerGeo,
+                    playerMat
+                );
+
+            player.position.set(
+                0,
+                1,
+                0
+            );
+
+            player.castShadow = true;
+
+            scene.add(player);
+
+
+            /* =====================================
+               SWORD
+            ===================================== */
+
+            const swordGeo =
+                new THREE.BoxGeometry(
+                    0.12,
+                    1.7,
+                    0.22
+                );
+
+            const swordMat =
+                new THREE.MeshStandardMaterial({
+                    color: 0x00ffcc,
+                    emissive: 0x00ffcc,
+                    emissiveIntensity: 2
+                });
+
+            sword =
+                new THREE.Mesh(
+                    swordGeo,
+                    swordMat
+                );
+
+            sword.position.set(
+                0.7,
+                0,
+                -0.5
+            );
+
+            sword.rotation.x =
+                Math.PI / 2;
+
+            sword.castShadow = true;
+
+            player.add(sword);
+
+
+            /* =====================================
+               EVENTS
+            ===================================== */
+
+            window.addEventListener(
+                "keydown",
+                onKeyDown
+            );
+
+            window.addEventListener(
+                "keyup",
+                onKeyUp
+            );
+
+            window.addEventListener(
+                "resize",
+                onWindowResize
+            );
+
+
+            /* Spawn zombies */
+
+            if (spawnTimer) {
+                clearInterval(spawnTimer);
+            }
+
+            spawnTimer =
+                setInterval(
+                    spawnZombie,
+                    1500
+                );
+
+            /* Spawn initial enemies */
+
+            for (let i = 0; i < 4; i++) {
+                setTimeout(
+                    spawnZombie,
+                    i * 300
+                );
+            }
+        }
+
+
+        /* =========================================
+           KEYBOARD
+        ========================================= */
+
+        function onKeyDown(event) {
+
+            keys[event.code] = true;
+
+            if (
+                event.code === "Space"
+            ) {
+                event.preventDefault();
+            }
+        }
+
+
+        function onKeyUp(event) {
+
+            keys[event.code] = false;
+        }
+
+
+        /* =========================================
+           SPAWN ZOMBIE
+        ========================================= */
+
+        function spawnZombie() {
+
+            if (
+                isGameOver ||
+                !player ||
+                zombies.length >= 20
+            ) {
+                return;
+            }
+
+            const zombieGeo =
+                new THREE.BoxGeometry(
+                    1,
+                    2,
+                    1
+                );
+
+            const zombieMat =
+                new THREE.MeshStandardMaterial({
+                    color: 0x00aa44,
+                    emissive: 0x330000,
+                    roughness: 0.7
+                });
+
+            const zombie =
+                new THREE.Mesh(
+                    zombieGeo,
+                    zombieMat
+                );
+
+
+            const angle =
+                Math.random() *
+                Math.PI *
+                2;
+
+            const distance =
+                15 +
+                Math.random() * 10;
+
+
+            zombie.position.x =
+                player.position.x +
+                Math.cos(angle) *
+                distance;
+
+            zombie.position.z =
+                player.position.z +
+                Math.sin(angle) *
+                distance;
+
+            zombie.position.y = 1;
+
+            zombie.castShadow = true;
+
+
+            zombie.userData = {
+
+                hp: 2,
+
+                speed:
+                    0.04 +
+                    Math.random() * 0.03,
+
+                attackTimer: 0
+
+            };
+
+
+            scene.add(zombie);
+
+            zombies.push(zombie);
+        }
+
+
+        /* =========================================
+           BLOOD EFFECT
+        ========================================= */
+
+        function createBloodEffect(position) {
+
+            for (
+                let i = 0;
+                i < 15;
+                i++
+            ) {
+
+                const particleGeo =
+                    new THREE.SphereGeometry(
+                        0.08,
+                        4,
+                        4
+                    );
+
+                const particleMat =
+                    new THREE.MeshBasicMaterial({
+                        color: 0xff0055
+                    });
+
+                const particle =
+                    new THREE.Mesh(
+                        particleGeo,
+                        particleMat
+                    );
+
+                particle.position.copy(
+                    position
+                );
+
+                particle.userData = {
+
+                    vx:
+                        (Math.random() - 0.5)
+                        * 0.2,
+
+                    vy:
+                        Math.random()
+                        * 0.2,
+
+                    vz:
+                        (Math.random() - 0.5)
+                        * 0.2,
+
+                    life: 30
+
+                };
+
+                scene.add(particle);
+
+                bloodParticles.push(
+                    particle
+                );
+            }
+        }
+
+
+        /* =========================================
+           RESIZE
+        ========================================= */
+
+        function onWindowResize() {
+
+            if (!camera || !renderer) {
+                return;
+            }
+
+            camera.aspect =
+                window.innerWidth /
+                window.innerHeight;
+
+            camera.updateProjectionMatrix();
+
+            renderer.setSize(
+                window.innerWidth,
+                window.innerHeight
+            );
+        }
+
+
+        /* =========================================
+           GAME LOOP
+        ========================================= */
+
+        function animate() {
+
+            if (isGameOver) {
+                return;
+            }
+
+            requestAnimationFrame(
+                animate
+            );
+
+
+            /* =====================================
+               PLAYER MOVEMENT
+            ===================================== */
+
+            let moveX = 0;
+            let moveZ = 0;
+
+            if (
+                keys["KeyW"] ||
+                keys["ArrowUp"]
+            ) {
+                moveZ -= 1;
+            }
+
+            if (
+                keys["KeyS"] ||
+                keys["ArrowDown"]
+            ) {
+                moveZ += 1;
+            }
+
+            if (
+                keys["KeyA"] ||
+                keys["ArrowLeft"]
+            ) {
+                moveX -= 1;
+            }
+
+            if (
+                keys["KeyD"] ||
+                keys["ArrowRight"]
+            ) {
+                moveX += 1;
+            }
+
+
+            const moving =
+                moveX !== 0 ||
+                moveZ !== 0;
+
+
+            if (moving) {
+
+                const length =
+                    Math.sqrt(
+                        moveX * moveX +
+                        moveZ * moveZ
+                    );
+
+                moveX /= length;
+                moveZ /= length;
+
+
+                const speed = 0.15;
+
+                player.position.x +=
+                    moveX * speed;
+
+                player.position.z +=
+                    moveZ * speed;
+
+
+                player.rotation.y =
+                    Math.atan2(
+                        -moveX,
+                        -moveZ
+                    );
+            }
+
+
+            /* =====================================
+               CAMERA
+            ===================================== */
+
+            const targetCameraX =
+                player.position.x;
+
+            const targetCameraZ =
+                player.position.z + 12;
+
+
+            camera.position.x +=
+                (targetCameraX -
+                    camera.position.x) *
+                0.08;
+
+            camera.position.z +=
+                (targetCameraZ -
+                    camera.position.z) *
+                0.08;
+
+            camera.lookAt(
+                player.position.x,
+                0,
+                player.position.z
+            );
+
+
+            /* =====================================
+               ATTACK
+            ===================================== */
+
+            if (
+                keys["Space"] &&
+                !isAttacking &&
+                attackCooldown <= 0
+            ) {
+
+                isAttacking = true;
+
+                attackCooldown = 25;
+
+                sword.material.color.setHex(
+                    0xff0055
+                );
+
+                sword.material.emissive.setHex(
+                    0xff0055
+                );
+            }
+
+
+            if (attackCooldown > 0) {
+                attackCooldown--;
+            }
+
+
+            if (isAttacking) {
+
+                sword.rotation.z += 0.4;
+
+                if (
+                    sword.rotation.z >=
+                    Math.PI
+                ) {
+
+                    checkSwordHit();
+
+                    sword.rotation.z = 0;
+
+                    isAttacking = false;
+
+                    sword.material.color.setHex(
+                        0x00ffcc
+                    );
+
+                    sword.material.emissive.setHex(
+                        0x00ffcc
+                    );
+                }
+            }
+
+
+            /* =====================================
+               ZOMBIE AI
+            ===================================== */
+
+            for (
+                let i = zombies.length - 1;
+                i >= 0;
+                i--
+            ) {
+
+                const zombie =
+                    zombies[i];
+
+
+                zombie.lookAt(
+                    player.position.x,
+                    zombie.position.y,
+                    player.position.z
+                );
+
+
+                const distance =
+                    zombie.position.distanceTo(
+                        player.position
+                    );
+
+
+                if (distance > 1.2) {
+
+                    zombie.translateZ(
+                        zombie.userData.speed
+                    );
+
+                } else {
+
+                    zombie.userData.attackTimer--;
+
+                    if (
+                        zombie.userData.attackTimer <= 0
+                    ) {
+
+                        playerHp -= 2;
+
+                        zombie.userData.attackTimer =
+                            20;
+
+                        updateHp();
+
+                        if (playerHp <= 0) {
+                            endGame();
+                            break;
+                        }
+                    }
+                }
+            }
+
+
+            /* =====================================
+               BLOOD PARTICLES
+            ===================================== */
+
+            for (
+                let i = bloodParticles.length - 1;
+                i >= 0;
+                i--
+            ) {
+
+                const particle =
+                    bloodParticles[i];
+
+
+                particle.position.x +=
+                    particle.userData.vx;
+
+                particle.position.y +=
+                    particle.userData.vy;
+
+                particle.position.z +=
+                    particle.userData.vz;
+
+
+                particle.userData.vy -=
+                    0.01;
+
+                particle.userData.life--;
+
+
+                if (
+                    particle.userData.life <= 0
+                ) {
+
+                    scene.remove(
+                        particle
+                    );
+
+                    bloodParticles.splice(
+                        i,
+                        1
+                    );
+                }
+            }
+
+
+            /* =====================================
+               RENDER
+            ===================================== */
+
+            renderer.render(
+                scene,
+                camera
+            );
+        }
+
+
+        /* =========================================
+           HP
+        ========================================= */
+
+        function updateHp() {
+
+            const hp =
+                Math.max(
+                    0,
+                    Math.min(
+                        100,
+                        playerHp
+                    )
+                );
+
+            hpBar.style.width =
+                hp + "%";
+        }
+
+
+        /* =========================================
+           SWORD HIT
+        ========================================= */
+
+        function checkSwordHit() {
+
+            const attackRange = 2.5;
+
+
+            for (
+                let i = zombies.length - 1;
+                i >= 0;
+                i--
+            ) {
+
+                const zombie =
+                    zombies[i];
+
+
+                const distance =
+                    player.position.distanceTo(
+                        zombie.position
+                    );
+
+
+                if (
+                    distance <= attackRange
+                ) {
+
+                    zombie.userData.hp--;
+
+                    createBloodEffect(
+                        zombie.position
+                    );
+
+
+                    /* Zombie dead */
+
+                    if (
+                        zombie.userData.hp <= 0
+                    ) {
+
+                        scene.remove(
+                            zombie
+                        );
+
+                        zombies.splice(
+                            i,
+                            1
+                        );
+
+
+                        score += 100;
+
+
+                        scoreVal.innerText =
+                            String(score)
+                                .padStart(
+                                    4,
+                                    "0"
+                                );
+
+
+                        myScore.innerText =
+                            score.toLocaleString();
+                    }
+                }
+            }
+        }
+
+
+        /* =========================================
+           GAME OVER
+        ========================================= */
+
+        function endGame() {
+
+            isGameOver = true;
+
+            if (spawnTimer) {
+                clearInterval(spawnTimer);
+                spawnTimer = null;
+            }
+
+            gameOverScreen.style.display =
+                "flex";
+        }
+
+
+        /* =========================================
+           RESTART
+        ========================================= */
+
+        function restartGame() {
+
+            /* Remove zombies */
+
+            zombies.forEach(
+                zombie => {
+                    scene.remove(zombie);
+                }
+            );
+
+            zombies = [];
+
+
+            /* Remove particles */
+
+            bloodParticles.forEach(
+                particle => {
+                    scene.remove(particle);
+                }
+            );
+
+            bloodParticles = [];
+
+
+            /* Reset */
+
+            playerHp = 100;
+
+            score = 0;
+
+            isGameOver = false;
+
+            isAttacking = false;
+
+            attackCooldown = 0;
+
+
+            player.position.set(
+                0,
+                1,
+                0
+            );
+
+            player.rotation.set(
+                0,
+                0,
+                0
+            );
+
+
+            sword.rotation.z = 0;
+
+            sword.material.color.setHex(
+                0x00ffcc
+            );
+
+            sword.material.emissive.setHex(
+                0x00ffcc
+            );
+
+
+            updateHp();
+
+
+            scoreVal.innerText =
+                "0000";
+
+            myScore.innerText =
+                "0";
+
+
+            gameOverScreen.style.display =
+                "none";
+
+
+            /* Restart zombie spawning */
+
+            if (spawnTimer) {
+                clearInterval(spawnTimer);
+            }
+
+            spawnTimer =
+                setInterval(
+                    spawnZombie,
+                    1500
+                );
+
+
+            /* Spawn some zombies */
+
+            for (let i = 0; i < 3; i++) {
+                setTimeout(
+                    spawnZombie,
+                    i * 300
+                );
+            }
+
+
+            animationStarted = true;
+
+            animate();
+        }
+
+
+        /* =========================================
+           BUTTON EVENTS
+        ========================================= */
+
+        document
+            .getElementById("start-button")
+            .addEventListener(
+                "click",
+                startGame
+            );
+
+
+        document
+            .getElementById("restart-button")
+            .addEventListener(
+                "click",
+                restartGame
+            );
+
+
+        usernameInput.addEventListener(
+            "keydown",
+            event => {
+
+                if (
+                    event.key === "Enter"
+                ) {
+                    startGame();
+                }
+
+            }
+        );
+
+    </script>
+
+</body>
+</html>
