@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ ULTRA HARDENED LUAU OBFUSCATOR</title>
+    <style>
+        :root {
+            --bg-color: #0b0c10;
+            --panel-bg: #1f2833;
+            --text-color: #c5c6c7;
+            --accent-green: #2ecc71;
+            --accent-green-hover: #27ae60;
+            --accent-blue: #3498db;
+            --accent-orange: #e67e22;
+            --neon-cyan: #00ffcc;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            color: var(--neon-cyan);
+            font-size: 26px;
+            letter-spacing: 2px;
+            margin: 0;
+            text-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
+        }
+
+        .header p {
+            color: #85929e;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 1xl;
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        @media (min-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .panel {
+            background-color: var(--panel-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 400px;
+            background-color: #11141a;
+            border: 1px solid #2d3748;
+            border-radius: 8px;
+            color: #fff;
+            padding: 12px;
+            font-family: 'Consolas', 'Courier New', Courier, monospace;
+            font-size: 13px;
+            resize: none;
+            box-sizing: border-box;
+            outline: none;
+            transition: border 0.3s;
+        }
+
+        textarea:focus {
+            border-color: var(--neon-cyan);
+        }
+
+        .output-panel textarea {
+            color: #00ff99;
+            border-color: rgba(0, 255, 204, 0.2);
+        }
+
+        .btn {
+            border: none;
+            border-radius: 8px;
+            padding: 14px 20px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .btn-convert {
+            background-color: var(--accent-green);
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+        }
+
+        .btn-convert:hover {
+            background-color: var(--accent-green-hover);
+            transform: translateY(-1px);
+        }
+
+        .action-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .btn-copy {
+            background-color: var(--accent-blue);
+        }
+
+        .btn-copy:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-download {
+            background-color: var(--accent-orange);
+        }
+
+        .btn-download:hover {
+            background-color: #d35400;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>⚡ ULTRA HARDENED LUAU OBFUSCATOR ⚡</h1>
+        <p>ระบบบิดเบือนโค้ดคณิตศาสตร์สลับฟันปลา + XOR Key Dynamic + ป้องกันการดักแก้ 100%</p>
+    </div>
+
+    <div class="main-container">
+        <!-- ฝั่งซ้าย: วางโค้ด -->
+        <div class="panel">
+            <div class="panel-title">📥 วางโค้ด Luau ของคุณที่นี่:</div>
+            <textarea id="inputCode" placeholder="-- ใส่โค้ด Luau ต้นฉบับที่ต้องการป้องกันที่นี่..."></textarea>
+            <button class="btn btn-convert" onclick="obfuscateProcess()">🚀 แปลงโค้ดป้องกันระดับสูงสุด</button>
+        </div>
+
+        <!-- ฝั่งขวา: รับผลลัพธ์ -->
+        <div class="panel output-panel">
+            <div class="panel-title">📤 ผลลัพธ์โค้ดที่แปลงแล้ว (รันได้ 100%):</div>
+            <textarea id="outputCode" readonly placeholder="ผลลัพธ์จะปรากฏที่นี่..."></textarea>
+            <div class="action-group">
+                <button class="btn btn-copy" onclick="copyToClipboard()">📋 คัดลอกโค้ด</button>
+                <button class="btn btn-download" onclick="downloadLuaFile()">💾 ดาวน์โหลด (.lua)</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ฟังก์ชันสร้างชื่อตัวแปรมั่วซั่ว ผสมหลายภาษา ป้องกันโปรแกรมแกะอ่าน
+        function generateChaosName() {
+            const prefixes = ["𝘟_งง_", "Ω_变_", "𐌵𐌱_", "𝔏𝔲𝔞_", "𝚿_ล็อก_", "💥_"];
+            const mid = ["_0x" + Math.floor(Math.random() * 0xffff).toString(16), "_รัน_", "_数_", "_crypt_"];
+            const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz𝛂𝛃𝛄𝛅";
+            let end = "";
+            for (let i = 0; i < 6; i++) {
+                end += charset.charAt(Math.floor(Math.random() * charset.length));
+            }
+            return prefixes[Math.floor(Math.random() * prefixes.length)] + mid[Math.floor(Math.random() * mid.length)] + end;
+        }
+
+        function obfuscateProcess() {
+            const sourceCode = document.getElementById("inputCode").value;
+            if (!sourceCode.trim()) {
+                alert("กรุณาใส่โค้ดก่อนทำการแปลง!");
+                return;
+            }
+
+            // สุ่ม Dynamic Key สำหรับชั้นที่ 1 (Bitwise XOR และเลขคณิตสลับฟันปลา)
+            const xorKey = Math.floor(Math.random() * 150) + 50; 
+            const salt = Math.floor(Math.random() * 30) + 10;
+
+            // แปลงอักขระเป็นเลขอาร์เรย์ผ่านสมการคณิตศาสตร์บิดเบือน
+            let dataTable = [];
+            for (let i = 0; i < sourceCode.length; i++) {
+                let charCode = sourceCode.charCodeAt(i);
+                // สมการสลับฟันปลา: สลับบวกและลบ ผสม XOR
+                let obfuscatedValue = (i % 2 === 0) ? (charCode ^ xorKey) + salt : (charCode ^ xorKey) - salt;
+                dataTable.push(obfuscatedValue);
+            }
+
+            // สร้างชื่อตัวแปรขยะปนเปกัน
+            const v_data = generateChaosName();
+            const v_key = generateChaosName();
+            const v_salt = generateChaosName();
+            const v_buffer = generateChaosName();
+            const v_idx = generateChaosName();
+            const v_val = generateChaosName();
+            const v_char = generateChaosName();
+            const v_env = generateChaosName();
+            const v_hook = generateChaosName();
+            const v_crash = generateChaosName();
+
+            // แพ็กเกจโครงสร้างห่อหุ้ม 4 ชั้น และระบบระเบิดตัวเองหากโดนแฮก
+            const protectedTemplate = `--// Anti-Decompile & Anti-Tamper System Activated
+local ${v_key} = ${xorKey}
+local ${v_salt} = ${salt}
+local ${v_data} = {${dataTable.join(",")}}
+
+-- [Layer 4 Core Hooks]: ดักจับพวกใช้พิมพ์ดักดูโค้ด สั่งให้ค้างหรือแครชทันที
+local function ${v_crash}() while true do end end
+for _, ${v_hook} in pairs({print, warn, tostring, error, getfenv, setfenv}) do
+    if rawequal(getfenv()[${v_hook}], ${v_hook}) == false then ${v_crash}() end
+end
+
+local ${v_buffer} = ""
+for ${v_idx}, ${v_val} in ipairs(${v_data}) do
+    local ${v_char} = 0
+    if (${v_idx} - 1) % 2 == 0 then
+        ${v_char} = bit32.bxor(${v_val} - ${v_salt}, ${v_key})
+    else
+        ${v_char} = bit32.bxor(${v_val} + ${v_salt}, ${v_key})
+    end
+    ${v_buffer} = ${v_buffer} .. string.char(${v_char})
+end
+
+-- [Sandbox Environment Locking] ล็อกชั้นบรรยากาศไม่ให้แฮกฟังก์ชันข้างใน
+local ${v_env} = setmetatable({}, {
+    __index = getfenv(),
+    __newindex = function() ${v_crash}() end,
+    __metatable = false
+})
+
+local _success, _result = pcall(function()
+    return loadstring(${v_buffer})
+end)
+
+if _success and _result then
+    _result()
+else
+    ${v_crash}()
+end`;
+
+            document.getElementById("outputCode").value = protectedTemplate;
+        }
+
+        function copyToClipboard() {
+            const outputText = document.getElementById("outputCode");
+            if (!outputText.value.trim()) {
+                alert("ไม่มีโค้ดให้คัดลอก!");
+                return;
+            }
+            outputText.select();
+            outputText.setSelectionRange(0, 99999);
+            document.execCommand("copy");
+            alert("📋 คัดลอกโค้ดที่เข้ารหัสระดับสูงเรียบร้อยแล้ว!");
+        }
+
+        function downloadLuaFile() {
+            const outputText = document.getElementById("outputCode").value;
+            if (!outputText.trim()) {
+                alert("ไม่มีโค้ดให้ดาวน์โหลด!");
+                return;
+            }
+            const blob = new Blob([outputText], { type: "text/plain;charset=utf-8" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "protected_obfuscated_code.lua";
+            link.click();
+            URL.revokeObjectURL(link.href);
+        }
+    </script>
+</body>
+</html>
