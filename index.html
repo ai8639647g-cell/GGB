@@ -1,0 +1,739 @@
+<!DOCTYPE html><html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ NEXUS COMPILER: ANTI-AI SHIELD</title><style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Sarabun:wght@400;700&display=swap');
+
+    :root {
+        --bg-main: #040407;
+        --card-bg: #09090f;
+        --neon-cyan: #00f0ff;
+        --neon-magenta: #ff007f;
+        --neon-green: #39ff14;
+        --text-white: #f5f5fa;
+        --text-muted: #666677;
+        --border-line: #161622;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Sarabun', sans-serif;
+        background-color: var(--bg-main);
+        color: var(--text-white);
+        margin: 0;
+        padding: 30px 20px;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .workspace {
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-line);
+        border-radius: 16px;
+        width: 100%;
+        max-width: 1300px;
+        padding: 40px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+        position: relative;
+    }
+
+    .workspace::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(
+            90deg,
+            var(--neon-cyan),
+            var(--neon-magenta)
+        );
+        border-radius: 16px 16px 0 0;
+    }
+
+    .workspace-header {
+        border-bottom: 1px solid var(--border-line);
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .workspace-title {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 26px;
+        font-weight: 900;
+        letter-spacing: 2px;
+        background: linear-gradient(
+            90deg,
+            var(--neon-cyan),
+            var(--neon-magenta)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .system-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 35px;
+    }
+
+    @media (max-width: 950px) {
+        .system-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .panel-box {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .panel-label {
+        font-family: 'Orbitron', 'Sarabun', sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--text-muted);
+        margin-bottom: 12px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+    }
+
+    textarea {
+        width: 100%;
+        height: 480px;
+        background-color: #020204;
+        border: 1px solid var(--border-line);
+        border-radius: 10px;
+        color: #fff;
+        padding: 22px;
+        font-family: 'Fira Code', monospace;
+        font-size: 13px;
+        line-height: 1.6;
+        resize: none;
+        transition: all 0.3s;
+    }
+
+    textarea:focus {
+        outline: none;
+        border-color: var(--neon-cyan);
+        box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
+    }
+
+    .output-area {
+        color: var(--neon-green);
+        background-color: #010102;
+        text-shadow: 0 0 1px rgba(57, 255, 20, 0.2);
+    }
+
+    .toolbar {
+        grid-column: 1 / -1;
+        background-color: #020204;
+        border: 1px solid var(--border-line);
+        padding: 18px 30px;
+        border-radius: 10px;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 15px;
+        margin-top: 10px;
+    }
+
+    button {
+        font-family: 'Orbitron', 'Sarabun', sans-serif;
+        font-weight: 700;
+        font-size: 13px;
+        letter-spacing: 1px;
+        padding: 14px 30px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-transform: uppercase;
+    }
+
+    button:active {
+        transform: scale(0.97);
+    }
+
+    .btn-process {
+        background: linear-gradient(
+            135deg,
+            var(--neon-cyan),
+            #00b0bd
+        );
+        color: #000;
+        box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+    }
+
+    .btn-process:hover {
+        box-shadow: 0 0 25px rgba(0, 240, 255, 0.5);
+    }
+
+    .btn-copy {
+        background-color: #12121f;
+        color: var(--text-white);
+        border: 1px solid var(--border-line);
+    }
+
+    .btn-copy:hover {
+        background-color: #1a1a2e;
+        border-color: #fff;
+    }
+
+    .btn-clear {
+        background-color: transparent;
+        color: var(--text-muted);
+    }
+
+    .btn-clear:hover {
+        color: var(--neon-magenta);
+    }
+
+    .status-bar {
+        margin-top: 25px;
+        font-size: 12px;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .status-indicator {
+        width: 6px;
+        height: 6px;
+        background-color: var(--neon-cyan);
+        border-radius: 50%;
+        animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(0, 240, 255, 0.7);
+        }
+
+        70% {
+            box-shadow: 0 0 0 6px rgba(0, 240, 255, 0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(0, 240, 255, 0);
+        }
+    }
+</style>
+
+</head><body><div class="workspace"><div class="workspace-header">
+    <div class="workspace-title">
+        ⚡ NEXUS ADVANCED COMPILER
+    </div>
+
+    <div style="
+        font-family:'Orbitron';
+        font-size:12px;
+        color:var(--neon-magenta);
+        letter-spacing:1px;
+    ">
+        CORE ENGINE v5
+    </div>
+</div>
+
+<div class="system-grid">
+
+    <div class="panel-box">
+        <div class="panel-label">
+            📝 Input Source Code (Luau)
+        </div>
+
+        <textarea
+            id="sourceIn"
+            placeholder="-- วางโค้ด Luau ต้นฉบับที่นี่...
+
+local speed = 50
+print('Hello Delta')"></textarea>
+</div>
+
+    <div class="panel-box">
+
+        <div class="panel-label">
+            🛰️ Output Obfuscated Code
+        </div>
+
+        <textarea
+            id="cryptOut"
+            class="output-area"
+            readonly
+            placeholder="[ โค้ดที่ผ่านการแปลงจะแสดงที่นี่ ]"></textarea>
+
+    </div>
+
+    <div class="toolbar">
+
+        <button
+            class="btn-clear"
+            onclick="clearAll()">
+            ล้างจอ
+        </button>
+
+        <button
+            class="btn-copy"
+            onclick="copyCode()">
+            📋 คัดลอกสคริปต์
+        </button>
+
+        <button
+            class="btn-process"
+            onclick="protectScript()">
+            ⚡ คอมไพล์และป้องกันโค้ด
+        </button>
+
+    </div>
+
+</div>
+
+<div class="status-bar">
+
+    <div
+        class="status-indicator"
+        id="statusDot">
+    </div>
+
+    <span id="statusMessage">
+        ระบบพร้อมใช้งาน: สแตนด์บาย
+    </span>
+
+</div>
+
+</div><script>
+
+/* =========================================================
+   STATUS SYSTEM
+========================================================= */
+
+function updateStatus(text, type) {
+
+    const msg = document.getElementById("statusMessage");
+    const dot = document.getElementById("statusDot");
+
+    msg.innerText = "ระบบ: " + text;
+
+    if (type === "success") {
+
+        dot.style.backgroundColor = "var(--neon-green)";
+        msg.style.color = "var(--neon-green)";
+
+    } else if (type === "copied") {
+
+        dot.style.backgroundColor = "var(--neon-cyan)";
+        msg.style.color = "var(--neon-cyan)";
+
+    } else {
+
+        dot.style.backgroundColor = "var(--neon-magenta)";
+        msg.style.color = "var(--neon-magenta)";
+    }
+}
+
+
+/* =========================================================
+   RANDOM NAME GENERATOR
+========================================================= */
+
+function makeRandomName(length) {
+
+    const chars =
+        "abcdefghijklmnopqrstuvwxyz" +
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+        "0123456789_";
+
+    let result = "a";
+
+    for (let i = 0; i < length - 1; i++) {
+
+        result += chars.charAt(
+            Math.floor(Math.random() * chars.length)
+        );
+    }
+
+    return result;
+}
+
+
+/* =========================================================
+   BYTE ENCODER
+========================================================= */
+
+function encodeSource(source) {
+
+    const values = [];
+
+    for (let i = 0; i < source.length; i++) {
+
+        const byte = source.charCodeAt(i);
+
+        /*
+         * แบ่งค่าต้นฉบับออกเป็น 2 ส่วน
+         */
+        const part1 = Math.floor(byte * 0.7);
+        const part2 = byte - part1;
+
+        /*
+         * XOR แต่ละส่วน
+         */
+        const encoded1 = part1 ^ 0x2D;
+        const encoded2 = part2 ^ 0x4B;
+
+        values.push(encoded1);
+        values.push(encoded2);
+    }
+
+    return values;
+}
+
+
+/* =========================================================
+   CONTROL FLOW JUNK
+========================================================= */
+
+function generateJunk() {
+
+    let output = "";
+
+    for (let i = 0; i < 15; i++) {
+
+        const state = Math.floor(
+            Math.random() * 8000 + 1000
+        );
+
+        const name1 = makeRandomName(6);
+        const name2 = makeRandomName(6);
+
+        output +=
+            `local ${name1} = ${state}
+` +
+            `local ${name2} = function(x)
+` +
+            `    return x and math.pi or 0
+` +
+            `end
+` +
+            `if ${name1} == 0 then
+` +
+            `    ${name2}(nil)
+` +
+            `end
+
+`;
+    }
+
+    return output;
+}
+
+
+/* =========================================================
+   MAIN OBFUSCATION ENGINE
+========================================================= */
+
+function protectScript() {
+
+    const rawInput =
+        document.getElementById("sourceIn").value;
+
+    if (!rawInput.trim()) {
+
+        updateStatus(
+            "ไม่พบสคริปต์ต้นฉบับ กรุณากรอกข้อมูลก่อน!",
+            "error"
+        );
+
+        return;
+    }
+
+
+    /*
+     * สุ่มชื่อระบบ
+     */
+
+    const vmDecoderName =
+        makeRandomName(8) +
+        "_" +
+        Math.floor(Math.random() * 90 + 10);
+
+    const streamVarName =
+        makeRandomName(7);
+
+    const bufferVarName =
+        makeRandomName(7);
+
+    const loopVarName =
+        makeRandomName(6);
+
+
+    /*
+     * เข้ารหัส source
+     */
+
+    const encoded =
+        encodeSource(rawInput);
+
+
+    /*
+     * สร้างข้อมูลตัวเลข
+     */
+
+    const packedData =
+        encoded.join(",");
+
+
+    /*
+     * สร้าง junk code
+     */
+
+    const controlFlowJunk =
+        generateJunk();
+
+
+    /*
+     * สร้างโค้ด Luau ผลลัพธ์
+     */
+
+    let output = "";
+
+    output += "--[[ NEXUS ENGINE PROTECTED ]]\n";
+    output += "-- Generated locally\n\n";
+
+    output += controlFlowJunk;
+
+    output +=
+        `local ${streamVarName} = {${packedData}}
+
+`;
+
+    output +=
+        `local ${bufferVarName} = {}
+
+`;
+
+    output +=
+        `local function ${vmDecoderName}()
+`;
+
+    output +=
+        `    local _c = 1
+`;
+
+    output +=
+        `    for ${loopVarName} = 1, #${streamVarName}, 2 do
+`;
+
+    output +=
+        `        local _p1 = bit32.bxor(${streamVarName}[${loopVarName}], 0x2D)
+`;
+
+    output +=
+        `        local _p2 = bit32.bxor(${streamVarName}[${loopVarName} + 1], 0x4B)
+`;
+
+    output +=
+        `        ${bufferVarName}[_c] = string.char(_p1 + _p2)
+`;
+
+    output +=
+        `        _c = _c + 1
+`;
+
+    output +=
+        `    end
+`;
+
+    output +=
+        `    return table.concat(${bufferVarName})
+`;
+
+    output +=
+        `end
+
+`;
+
+    output +=
+        `local _engine, _err = loadstring(${vmDecoderName}())
+
+`;
+
+    output +=
+        `if _engine then
+`;
+
+    output +=
+        `    task.spawn(_engine)
+`;
+
+    output +=
+        `else
+`;
+
+    output +=
+        `    warn("[NEXUS ERROR]: " .. tostring(_err))
+`;
+
+    output +=
+        `end
+
+`;
+
+    output +=
+        "--[[ END NEXUS PROTECTED CODE ]]";
+
+
+    /*
+     * แสดงผล
+     */
+
+    document.getElementById("cryptOut").value =
+        output;
+
+
+    updateStatus(
+        "คอมไพล์สำเร็จ! สร้างโค้ดป้องกันเรียบร้อย",
+        "success"
+    );
+}
+
+
+/* =========================================================
+   COPY SYSTEM
+========================================================= */
+
+function copyCode() {
+
+    const text =
+        document.getElementById("cryptOut").value;
+
+    if (!text.trim()) {
+
+        updateStatus(
+            "ไม่มีโค้ดให้คัดลอก!",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if (
+        navigator.clipboard &&
+        window.isSecureContext
+    ) {
+
+        navigator.clipboard
+            .writeText(text)
+            .then(() => {
+
+                updateStatus(
+                    "คัดลอกโค้ดลงคลิปบอร์ดแล้ว!",
+                    "copied"
+                );
+
+            })
+            .catch(() => {
+
+                fallbackCopy(text);
+
+            });
+
+    } else {
+
+        fallbackCopy(text);
+    }
+}
+
+
+/* =========================================================
+   FALLBACK COPY
+========================================================= */
+
+function fallbackCopy(text) {
+
+    const textArea =
+        document.createElement("textarea");
+
+    textArea.value = text;
+
+    textArea.style.position = "fixed";
+    textArea.style.left = "-999999px";
+    textArea.style.top = "0";
+
+    document.body.appendChild(textArea);
+
+    textArea.focus();
+    textArea.select();
+
+    try {
+
+        const success =
+            document.execCommand("copy");
+
+        if (success) {
+
+            updateStatus(
+                "คัดลอกโค้ดแล้ว!",
+                "copied"
+            );
+
+        } else {
+
+            updateStatus(
+                "คัดลอกไม่สำเร็จ กรุณาคัดลอกด้วยตนเอง",
+                "error"
+            );
+        }
+
+    } catch (error) {
+
+        updateStatus(
+            "คัดลอกไม่สำเร็จ กรุณาคัดลอกด้วยตนเอง",
+            "error"
+        );
+
+    }
+
+    document.body.removeChild(textArea);
+}
+
+
+/* =========================================================
+   CLEAR
+========================================================= */
+
+function clearAll() {
+
+    document.getElementById("sourceIn").value = "";
+    document.getElementById("cryptOut").value = "";
+
+    updateStatus(
+        "ล้างหน้าจอเรียบร้อย",
+        "success"
+    );
+
+    document.getElementById(
+        "statusDot"
+    ).style.backgroundColor =
+        "var(--neon-cyan)";
+
+    document.getElementById(
+        "statusMessage"
+    ).style.color =
+        "var(--text-muted)";
+}
+
+</script></body>
+</html>
