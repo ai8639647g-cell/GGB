@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ VAULT ULTRA V7: VM MATRIX SHIELD</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;900&family=Sarabun:wght@400;600;700&display=swap');
+
+        :root {
+            --bg-dark: #020205;
+            --panel-bg: rgba(6, 6, 12, 0.95);
+            --neon-magenta: #bc00ff;
+            --neon-cyan: #00f0ff;
+            --neon-green: #39ff14;
+            --text-color: #f0f0f5;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: var(--bg-dark);
+            background-image:
+                radial-gradient(
+                    at 5% 5%,
+                    rgba(188, 0, 255, 0.15) 0px,
+                    transparent 40%
+                ),
+                radial-gradient(
+                    at 95% 95%,
+                    rgba(0, 240, 255, 0.15) 0px,
+                    transparent 40%
+                );
+            color: var(--text-color);
+            margin: 0;
+            padding: 30px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .vault-container {
+            background: var(--panel-bg);
+            backdrop-filter: blur(25px);
+            border: 2px solid var(--neon-magenta);
+            box-shadow:
+                0 0 50px rgba(188, 0, 255, 0.3),
+                inset 0 0 20px rgba(0, 240, 255, 0.05);
+            width: 100%;
+            max-width: 1200px;
+            padding: 40px;
+            border-radius: 16px;
+            position: relative;
+        }
+
+        .vault-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(
+                90deg,
+                var(--neon-magenta),
+                var(--neon-cyan)
+            );
+            border-radius: 16px 16px 0 0;
+        }
+
+        .vault-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 20px;
+            margin-bottom: 35px;
+            gap: 20px;
+        }
+
+        .vault-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 26px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            background: linear-gradient(
+                45deg,
+                var(--neon-magenta),
+                var(--neon-cyan)
+            );
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .vault-icon {
+            font-size: 32px;
+            filter: drop-shadow(0 0 8px var(--neon-magenta));
+        }
+
+        .vault-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 35px;
+        }
+
+        @media (max-width: 900px) {
+            .vault-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .action-bar {
+                grid-column: auto !important;
+            }
+        }
+
+        .editor-section {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        label {
+            font-family: 'Orbitron', 'Sarabun', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: var(--neon-cyan);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        textarea {
+            width: 100%;
+            height: 420px;
+            background: #010103;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            padding: 18px;
+            font-family: 'Fira Code', Consolas, monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            resize: none;
+            transition: all 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
+        }
+
+        .output-box {
+            color: var(--neon-green);
+            background: #000001;
+            text-shadow: 0 0 2px rgba(57, 255, 20, 0.2);
+        }
+
+        .action-bar {
+            grid-column: 1 / -1;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            font-family: 'Orbitron', 'Sarabun', sans-serif;
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: 1px;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            color: #fff;
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        .btn-obfuscate {
+            background: linear-gradient(
+                135deg,
+                #bc00ff,
+                #7a00a8
+            );
+            box-shadow: 0 0 15px rgba(188, 0, 255, 0.3);
+        }
+
+        .btn-obfuscate:hover {
+            box-shadow: 0 0 25px rgba(188, 0, 255, 0.6);
+        }
+
+        .btn-copy {
+            background: linear-gradient(
+                135deg,
+                #00f0ff,
+                #00a8b5
+            );
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+            color: #000;
+        }
+
+        .btn-copy:hover {
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.6);
+        }
+
+        .btn-clear {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-clear:hover {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: #fff;
+        }
+
+        .footer-status {
+            margin-top: 25px;
+            font-size: 12px;
+            padding: 10px 15px;
+            background: rgba(0, 0, 0, 0.6);
+            border-left: 4px solid var(--neon-green);
+            border-radius: 0 6px 6px 0;
+            color: #bbb;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .secure-dot {
+            width: 8px;
+            height: 8px;
+            min-width: 8px;
+            background-color: var(--neon-green);
+            border-radius: 50%;
+            animation: pulse 1.2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(57, 255, 20, 0.6);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(57, 255, 20, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(57, 255, 20, 0);
+            }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 12px;
+            }
+
+            .vault-container {
+                padding: 20px;
+            }
+
+            .vault-title {
+                font-size: 17px;
+            }
+
+            .vault-icon {
+                font-size: 24px;
+            }
+
+            textarea {
+                height: 330px;
+            }
+
+            .action-bar {
+                justify-content: stretch;
+            }
+
+            button {
+                flex: 1 1 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="vault-container">
+
+    <div class="vault-header">
+        <div class="vault-title">
+            🔒 VAULT V7: VIRTUAL MACHINE CRYPT CORE
+        </div>
+
+        <div class="vault-icon">🔮</div>
+    </div>
+
+    <div class="vault-grid">
+
+        <div class="editor-section">
+            <label>
+                📝 INPUT: โค้ดต้นฉบับภาษา Luau
+            </label>
+
+            <textarea
+                id="srcInput"
+                spellcheck="false"
+                placeholder="-- วางสคริปต์ Luau ที่ต้องการแปลง...&#10;print('Hello Delta')"
+            ></textarea>
+        </div>
+
+        <div class="editor-section">
+            <label>
+                🛰️ OUTPUT: โค้ดที่ถูกแปลง
+            </label>
+
+            <textarea
+                id="cryptOutput"
+                class="output-box"
+                readonly
+                spellcheck="false"
+                placeholder="[ ผลลัพธ์จะแสดงที่นี่ ]"
+            ></textarea>
+        </div>
+
+        <div class="action-bar">
+
+            <button
+                class="btn-clear"
+                onclick="clearWorkspace()"
+            >
+                🗑️ ล้างหน้าจอ
+            </button>
+
+            <button
+                class="btn-copy"
+                onclick="copyToClipboard()"
+            >
+                📋 คัดลอกผลลัพธ์
+            </button>
+
+            <button
+                class="btn-obfuscate"
+                onclick="obfuscateCore()"
+            >
+                ⚡ แปลงโค้ด
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="footer-status">
+        <div
+            class="secure-dot"
+            id="dot"
+        ></div>
+
+        <span id="statusTxt">
+            ระบบความปลอดภัย: พร้อมใช้งาน
+        </span>
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+function setLog(text, statusType) {
+
+    const txt = document.getElementById("statusTxt");
+    const dot = document.getElementById("dot");
+
+    txt.innerText = "ระบบ: " + text;
+
+    if (statusType === "success") {
+
+        dot.style.backgroundColor = "var(--neon-cyan)";
+        txt.style.color = "var(--neon-cyan)";
+
+    } else if (statusType === "copied") {
+
+        dot.style.backgroundColor = "var(--neon-green)";
+        txt.style.color = "var(--neon-green)";
+
+    } else {
+
+        dot.style.backgroundColor = "var(--neon-magenta)";
+        txt.style.color = "var(--neon-magenta)";
+    }
+}
+
+
+/* =========================================================
+   RANDOM SEED
+========================================================= */
+
+function randomSeed(max = 999999) {
+    return Math.floor(Math.random() * max);
+}
+
+
+/* =========================================================
+   LUA STRING ESCAPE
+========================================================= */
+
+function luaQuote(str) {
+
+    return str
+        .replace(/\\/g, "\\\\")
+        .replace(/"/g, '\\"')
+        .replace(/\r/g, "\\r")
+        .replace(/\n/g, "\\n");
+}
+
+
+/* =========================================================
+   OBFUSCATE CORE
+========================================================= */
+
+function obfuscateCore() {
+
+    const source =
+        document.getElementById("srcInput").value;
+
+    if (!source.trim()) {
+
+        setLog(
+            "กรุณาใส่สคริปต์ต้นฉบับก่อน!",
+            "error"
+        );
+
+        return;
+    }
+
+    try {
+
+        /* -------------------------------------------------
+           1. แปลงตัวอักษรเป็นข้อมูลตัวเลข
+        ------------------------------------------------- */
+
+        const chunks = [];
+
+        for (let i = 0; i < source.length; i++) {
+
+            const charCode = source.charCodeAt(i);
+
+            const encryptedValue =
+                (charCode ^ (i % 5))
+                + (i * 2)
+                - 15;
+
+            chunks.push({
+                index: i,
+                val: encryptedValue
+            });
+        }
+
+
+        /* -------------------------------------------------
+           2. สุ่มลำดับข้อมูล
+        ------------------------------------------------- */
+
+        for (
+            let i = chunks.length - 1;
+            i > 0;
+            i--
+        ) {
+
+            const j =
+                Math.floor(Math.random() * (i + 1));
+
+            [
+                chunks[i],
+                chunks[j]
+            ] = [
+                chunks[j],
+                chunks[i]
+            ];
+        }
+
+
+        /* -------------------------------------------------
+           3. สร้าง Mapping
+        ------------------------------------------------- */
+
+        const indexMapping = [];
+        const scrambledData = [];
+
+        for (let i = 0; i < chunks.length; i++) {
+
+            indexMapping.push(
+                chunks[i].index
+            );
+
+            scrambledData.push(
+                chunks[i].val
+            );
+        }
+
+
+        /* -------------------------------------------------
+           4. สร้างโค้ดขยะ
+        ------------------------------------------------- */
+
+        let loopJunk = "";
+
+        for (let j = 0; j < 25; j++) {
+
+            const fakeSeed =
+                randomSeed();
+
+            loopJunk +=
+                `local _fake_ptr_${j} = function(x)
+    return math.sin(x or ${fakeSeed}) * math.cos(${fakeSeed})
+end\n`;
+
+            loopJunk +=
+                `if _fake_ptr_${j}(1) == 9999 then
+    pcall(function()
+        warn("VAULT_FAKE_BLOCK")
+    end)
+end\n`;
+        }
+
+
+        /* -------------------------------------------------
+           5. Arrays
+        ------------------------------------------------- */
+
+        const mapStr =
+            indexMapping.join(",");
+
+        const dataStr =
+            scrambledData.join(",");
+
+
+        /* -------------------------------------------------
+           6. สร้าง Lua Output
+        ------------------------------------------------- */
+
+        let finalScript = "";
+
+        finalScript +=
+`--[[ 
+    VAULT ULTRA V7
+    VM MATRIX SHIELD
+    Generated: ${new Date().toISOString()}
+]]\n\n`;
+
+        finalScript +=
+`if not game:IsLoaded() then
+    game.Loaded:Wait()
+end
+
+`;
+
+        finalScript += loopJunk;
+
+        finalScript +=
+`\n-- MATRIX DATA
+
+`;
+
+        finalScript +=
+`local _matrixMap = {
+    ${mapStr}
+}
+
+`;
+
+        finalScript +=
+`local _cipherStorage = {
+    ${dataStr}
+}
+
+`;
+
+        finalScript +=
+`local _runtimeBuffer = {}
+
+`;
+
+        finalScript +=
+`-- Runtime reconstruction
+
+`;
+
+        finalScript +=
+`for i = 1, #_cipherStorage do
+
+    local _trueIndex =
+        _matrixMap[i] + 1
+
+    local _rawVal =
+        _cipherStorage[i]
+
+    local _idx0 =
+        _trueIndex - 1
+
+    local _decryptedChar =
+        bit32.bxor(
+            (_rawVal + 15 - (_idx0 * 2)),
+            (_idx0 % 5)
+        )
+
+    _runtimeBuffer[_trueIndex] =
+        string.char(_decryptedChar)
+
+end
+
+`;
+
+        finalScript +=
+`local _runtimeSource =
+    table.concat(_runtimeBuffer)
+
+local _execEngine, _internalErr =
+    loadstring(_runtimeSource)
+
+if _execEngine then
+
+    task.spawn(_execEngine)
+
+else
+
+    warn(
+        "[VAULT ERROR] " ..
+        tostring(_internalErr)
+    )
+
+end
+
+`;
+
+        finalScript +=
+`--[[ END OF VAULT MATRIX STREAM ]]`;
+
+
+        /* -------------------------------------------------
+           7. แสดงผล
+        ------------------------------------------------- */
+
+        document.getElementById(
+            "cryptOutput"
+        ).value = finalScript;
+
+        setLog(
+            "แปลงโค้ดสำเร็จ! สร้างผลลัพธ์เรียบร้อยแล้ว",
+            "success"
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+        setLog(
+            "เกิดข้อผิดพลาด: " + error.message,
+            "error"
+        );
+    }
+}
+
+
+/* =========================================================
+   COPY
+========================================================= */
+
+async function copyToClipboard() {
+
+    const output =
+        document.getElementById(
+            "cryptOutput"
+        ).value;
+
+    if (!output.trim()) {
+
+        setLog(
+            "ไม่มีข้อมูลรหัสให้คัดลอก!",
+            "error"
+        );
+
+        return;
+    }
+
+    try {
+
+        if (
+            navigator.clipboard &&
+            window.isSecureContext
+        ) {
+
+            await navigator.clipboard.writeText(
+                output
+            );
+
+            setLog(
+                "📋 คัดลอกผลลัพธ์สำเร็จ!",
+                "copied"
+            );
+
+            return;
+        }
+
+        fallbackCopy(output);
+
+    } catch (error) {
+
+        fallbackCopy(output);
+    }
+}
+
+
+/* =========================================================
+   FALLBACK COPY
+========================================================= */
+
+function fallbackCopy(text) {
+
+    const textArea =
+        document.createElement("textarea");
+
+    textArea.value = text;
+
+    textArea.style.position = "fixed";
+    textArea.style.left = "-999999px";
+    textArea.style.top = "0";
+    textArea.style.opacity = "0";
+
+    document.body.appendChild(
+        textArea
+    );
+
+    textArea.focus();
+    textArea.select();
+
+    try {
+
+        const successful =
+            document.execCommand("copy");
+
+        if (successful) {
+
+            setLog(
+                "📋 คัดลอกผลลัพธ์สำเร็จ! (โหมดสำรอง)",
+                "copied"
+            );
+
+        } else {
+
+            setLog(
+                "คัดลอกไม่สำเร็จ กรุณาคัดลอกด้วยตนเอง",
+                "error"
+            );
+        }
+
+    } catch (error) {
+
+        setLog(
+            "คัดลอกไม่สำเร็จ กรุณาคัดลอกด้วยตนเอง",
+            "error"
+        );
+
+    } finally {
+
+        document.body.removeChild(
+            textArea
+        );
+    }
+}
+
+
+/* =========================================================
+   CLEAR
+========================================================= */
+
+function clearWorkspace() {
+
+    document.getElementById(
+        "srcInput"
+    ).value = "";
+
+    document.getElementById(
+        "cryptOutput"
+    ).value = "";
+
+    setLog(
+        "ล้างหน้าจอแล้ว ระบบพร้อมใช้งาน",
+        "success"
+    );
+
+    document.getElementById(
+        "dot"
+    ).style.backgroundColor =
+        "var(--neon-cyan)";
+
+    document.getElementById(
+        "statusTxt"
+    ).style.color =
+        "var(--neon-cyan)";
+}
+
+
+/* =========================================================
+   READY
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        setLog(
+            "ระบบพร้อมใช้งาน",
+            "success"
+        );
+
+    }
+);
+
+</script>
+
+</body>
+</html>
