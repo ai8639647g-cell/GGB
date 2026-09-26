@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>NextGen Custom Code Debugger & Auto-Fixer</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+        }
+
+        .error-line-highlight {
+            border-bottom: 2px dashed #a855f7;
+            background-color: rgba(168, 85, 247, 0.15);
+        }
+
+        .success-line-highlight {
+            background-color: rgba(16, 185, 129, 0.15);
+        }
+
+        .editor-scroll {
+            scrollbar-width: thin;
+            scrollbar-color: #475569 #151D30;
+        }
+
+        .editor-scroll::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .editor-scroll::-webkit-scrollbar-track {
+            background: #151D30;
+        }
+
+        .editor-scroll::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 10px;
+        }
+
+        .animate-fade-in {
+            animation: fadeIn .25s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .pulse-fix {
+            animation: pulseFix 1.5s infinite;
+        }
+
+        @keyframes pulseFix {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, .25);
+            }
+
+            50% {
+                box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-[#0F172A] text-slate-200 min-h-screen font-sans flex flex-col">
+
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-[#1E293B]/50 backdrop-blur px-6 py-4 flex justify-between items-center">
+
+        <div class="flex items-center gap-3">
+            <span class="text-2xl">🔍</span>
+
+            <h1 class="text-xl font-bold tracking-tight text-white">
+                Custom
+                <span class="text-purple-400">
+                    Error Analyzer & Fixer
+                </span>
+            </h1>
+        </div>
+
+        <button
+            id="analyze-btn"
+            class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-6 py-2.5 rounded-xl shadow-lg shadow-emerald-500/20 transition-all duration-200 cursor-pointer flex items-center gap-2 text-sm"
+        >
+            <span>🚀</span>
+            วิเคราะห์โค้ด
+        </button>
+
+    </header>
+
+    <!-- Main -->
+    <main class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 p-6">
+
+        <!-- LEFT -->
+        <div class="lg:col-span-7 flex flex-col bg-[#1E293B] rounded-2xl border border-slate-800 overflow-hidden shadow-2xl">
+
+            <div class="bg-[#151D30] px-4 py-3 border-b border-slate-800 flex justify-between items-center">
+
+                <span class="text-xs font-semibold tracking-wider text-slate-400 uppercase">
+                    Input Source Code
+                </span>
+
+                <button
+                    onclick="copyToClipboard('code-input')"
+                    class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-md transition cursor-pointer"
+                >
+                    📋 Copy ทั้งหมด
+                </button>
+
+            </div>
+
+            <div class="flex-1 flex relative font-mono text-sm leading-6 min-h-[400px]">
+
+                <!-- Line Numbers -->
+                <div
+                    id="line-numbers"
+                    class="w-12 shrink-0 bg-[#151D30] text-slate-600 text-right pr-3 pt-4 select-none overflow-hidden"
+                >
+                    1
+                </div>
+
+                <!-- Editor -->
+                <div class="flex-1 relative overflow-hidden">
+
+                    <!-- Highlight Overlay -->
+                    <div
+                        id="editor-overlay"
+                        class="absolute inset-0 p-4 pointer-events-none text-transparent whitespace-pre-wrap break-all font-mono leading-6 overflow-hidden"
+                    ></div>
+
+                    <!-- Textarea -->
+                    <textarea
+                        id="code-input"
+                        class="editor-scroll absolute inset-0 w-full h-full p-4 bg-transparent text-slate-200 focus:outline-none resize-none overflow-auto whitespace-pre font-mono leading-6 caret-purple-400 z-10"
+                        spellcheck="false"
+                    >let name = "Developer"
+functon sayHello() {
+    console.log(name;
+}
+sayHello()</textarea>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT -->
+        <div class="lg:col-span-5 flex flex-col gap-6">
+
+            <!-- Sandbox -->
+            <div class="bg-[#1E293B] rounded-2xl border border-slate-800 p-5 shadow-lg">
+
+                <div class="flex justify-between items-center mb-3">
+
+                    <h3 class="text-sm font-semibold text-slate-400 flex items-center gap-2">
+                        🖥️ Sandbox Simulation Result
+                    </h3>
+
+                    <button
+                        onclick="copyText('console-output')"
+                        class="text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-400 px-2 py-0.5 rounded transition cursor-pointer"
+                    >
+                        📋 Copy ผลลัพธ์
+                    </button>
+
+                </div>
+
+                <div
+                    id="console-output"
+                    class="bg-[#0F172A] rounded-xl p-4 font-mono text-xs min-h-[80px] flex items-center border border-slate-800 whitespace-pre-wrap w-full"
+                >
+                    ยังไม่มีการรันวิเคราะห์ระบบ...
+                </div>
+
+            </div>
+
+            <!-- Diagnostics -->
+            <div class="flex-1 bg-[#1E293B] rounded-2xl border border-slate-800 p-5 shadow-lg flex flex-col">
+
+                <div class="flex justify-between items-center mb-4">
+
+                    <h3 class="text-sm font-semibold text-slate-400 flex items-center gap-2">
+                        🚨 Live Diagnostics
+                    </h3>
+
+                    <button
+                        id="autofix-btn"
+                        class="hidden bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-1.5 rounded-lg text-xs transition shadow-md shadow-emerald-950/50 cursor-pointer items-center gap-1.5 pulse-fix"
+                    >
+                        🛠️ ซ่อมแซมโค้ดออโต้
+                    </button>
+
+                </div>
+
+                <!-- Error List -->
+                <div
+                    id="error-list"
+                    class="space-y-3 flex-1 overflow-y-auto max-h-[240px] pr-2"
+                >
+                    <div class="text-center text-slate-500 text-xs py-8">
+                        กดปุ่มสีเขียว "วิเคราะห์โค้ด" เพื่อเริ่มค้นหาจุดบกพร่อง
+                    </div>
+                </div>
+
+                <!-- Patch Tool -->
+                <div class="mt-4 pt-4 border-t border-slate-800">
+
+                    <div class="flex justify-between items-center mb-2">
+
+                        <h4 class="text-xs font-semibold text-purple-400 uppercase tracking-wider">
+                            🔧 Sandbox Patching Tool
+                        </h4>
+
+                        <button
+                            onclick="copyToClipboard('patch-input')"
+                            class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded cursor-pointer"
+                        >
+                            Copy ช่องนี้
+                        </button>
+
+                    </div>
+
+                    <div class="bg-[#0F172A] rounded-xl p-3 border border-purple-900/30">
+
+                        <div class="text-[11px] text-slate-500 mb-2 flex justify-between">
+
+                            <span id="patch-target">
+                                ยังไม่มีการดึงโค้ดที่ผิดพลาด
+                            </span>
+
+                            <span class="text-purple-400 font-bold">
+                                แก้ไขตรงนี้ 👇
+                            </span>
+
+                        </div>
+
+                        <input
+                            type="text"
+                            id="patch-input"
+                            disabled
+                            class="w-full bg-[#1E293B] border border-slate-800 rounded-lg px-3 py-2 text-sm font-mono text-white focus:outline-none focus:border-purple-500 disabled:opacity-40"
+                            placeholder="กดปุ่ม 'ดึงจุดนี้ไปแก้'"
+                        >
+
+                        <button
+                            id="patch-submit-btn"
+                            disabled
+                            class="w-full mt-3 bg-purple-600 hover:bg-purple-500 text-white font-medium py-2 rounded-lg text-xs transition flex justify-center items-center gap-2 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                        >
+                            📥 ส่งโค้ดที่แก้เสร็จแล้วกลับเข้าสู่ไฟล์หลัก
+                        </button>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+
+<script>
+
+    /* =========================================================
+       ELEMENTS
+    ========================================================= */
+
+    const codeInput = document.getElementById("code-input");
+    const editorOverlay = document.getElementById("editor-overlay");
+    const lineNumbers = document.getElementById("line-numbers");
+
+    const consoleOutput = document.getElementById("console-output");
+    const errorList = document.getElementById("error-list");
+
+    const analyzeBtn = document.getElementById("analyze-btn");
+    const autofixBtn = document.getElementById("autofix-btn");
+
+    const patchInput = document.getElementById("patch-input");
+    const patchTarget = document.getElementById("patch-target");
+    const patchSubmitBtn = document.getElementById("patch-submit-btn");
+
+
+    /* =========================================================
+       STATE
+    ========================================================= */
+
+    let activeErrorLine = null;
+    let lastFixMode = false;
+    let currentErrors = [];
+
+
+    /* =========================================================
+       ESCAPE HTML
+    ========================================================= */
+
+    function escapeHtml(text) {
+
+        return String(text)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
+
+
+    /* =========================================================
+       LINE NUMBERS
+    ========================================================= */
+
+    function updateLineNumbers(count) {
+
+        let html = "";
+
+        for (let i = 1; i <= count; i++) {
+            html += `${i}<br>`;
+        }
+
+        lineNumbers.innerHTML = html;
+    }
+
+
+    /* =========================================================
+       EDITOR VISUAL
+    ========================================================= */
+
+    function updateEditorVisual(lines, errors = []) {
+
+        const errorMap = {};
+
+        errors.forEach(error => {
+            errorMap[error.line] = error;
+        });
+
+        let html = "";
+
+        lines.forEach((line, index) => {
+
+            const lineNumber = index + 1;
+            const safeLine = escapeHtml(line || " ");
+
+            if (lastFixMode) {
+
+                html += `
+                    <div class="success-line-highlight">
+                        ${safeLine}
+                    </div>
+                `;
+
+            } else if (errorMap[lineNumber]) {
+
+                html += `
+                    <div class="error-line-highlight">
+                        ${safeLine}
+                    </div>
+                `;
+
+            } else {
+
+                html += `<div>${safeLine}</div>`;
+
+            }
+
+        });
+
+        editorOverlay.innerHTML = html;
+
+    }
+
+
+    /* =========================================================
+       BASIC SYNTAX SCANNER
+    ========================================================= */
+
+    function scanSyntax(lines) {
+
+        const errors = [];
+
+        let braceBalance = 0;
+        let parenBalance = 0;
+
+        lines.forEach((line, index) => {
+
+            const lineNumber = index + 1;
+            const trimmed = line.trim();
+
+            if (!trimmed) return;
+
+
+            /* functon -> function */
+
+            if (/\bfuncton\b/.test(line)) {
+
+                errors.push({
+                    line: lineNumber,
+                    type: "SyntaxError",
+                    msg: "พบคำว่า 'functon' ซึ่งสะกดผิด ต้องเป็น 'function'",
+                    code: line
+                });
+
+            }
+
+
+            /* consoel -> console */
+
+            if (/\bconsoel\b/.test(line)) {
+
+                errors.push({
+                    line: lineNumber,
+                    type: "ReferenceError",
+                    msg: "พบคำว่า 'consoel' ซึ่งสะกดผิด ต้องเป็น 'console'",
+                    code: line
+                });
+
+            }
+
+
+            /* Count braces */
+
+            braceBalance += (line.match(/{/g) || []).length;
+            braceBalance -= (line.match(/}/g) || []).length;
+
+
+            /* Count parentheses */
+
+            parenBalance += (line.match(/\(/g) || []).length;
+            parenBalance -= (line.match(/\)/g) || []).length;
+
+
+            /* Detect obvious console.log malformed */
+
+            if (line.includes("console.log")) {
+
+                const open = (line.match(/\(/g) || []).length;
+                const close = (line.match(/\)/g) || []).length;
+
+                if (open > close) {
+
+                    errors.push({
+                        line: lineNumber,
+                        type: "SyntaxError",
+                        msg: "console.log มีวงเล็บปิด ')' ไม่ครบ",
+                        code: line
+                    });
+
+                }
+
+            }
+
+        });
+
+
+        /* Parentheses */
+
+        if (parenBalance > 0) {
+
+            errors.push({
+                line: lines.length,
+                type: "SyntaxError",
+                msg: `ตรวจพบวงเล็บ '(' ที่ยังไม่มี ')' จำนวน ${parenBalance} จุด`,
+                code: lines[lines.length - 1] || ""
+            });
+
+        }
+
+        if (parenBalance < 0) {
+
+            errors.push({
+                line: lines.length,
+                type: "SyntaxError",
+                msg: "พบวงเล็บ ')' มากกว่าวงเล็บเปิด '('",
+                code: lines[lines.length - 1] || ""
+            });
+
+        }
+
+
+        /* Braces */
+
+        if (braceBalance > 0) {
+
+            errors.push({
+                line: lines.length,
+                type: "SyntaxError",
+                msg: `โครงสร้างวงเล็บปีกกา '{ }' ยังปิดไม่ครบ จำนวน ${braceBalance} คู่`,
+                code: lines[lines.length - 1] || ""
+            });
+
+        }
+
+        if (braceBalance < 0) {
+
+            errors.push({
+                line: lines.length,
+                type: "SyntaxError",
+                msg: "พบวงเล็บปีกกา '}' มากกว่าวงเล็บเปิด '{'",
+                code: lines[lines.length - 1] || ""
+            });
+
+        }
+
+
+        return errors;
+    }
+
+
+    /* =========================================================
+       RUNTIME TEST
+    ========================================================= */
+
+    function runSandbox(rawCode) {
+
+        const logs = [];
+
+        const fakeConsole = {
+
+            log: function (...args) {
+                logs.push(
+                    args
+                        .map(value => {
+                            try {
+                                return typeof value === "object"
+                                    ? JSON.stringify(value)
+                                    : String(value);
+                            } catch {
+                                return String(value);
+                            }
+                        })
+                        .join(" ")
+                );
+            },
+
+            warn: function (...args) {
+                logs.push(
+                    "⚠️ " + args.map(String).join(" ")
+                );
+            },
+
+            error: function (...args) {
+                logs.push(
+                    "❌ " + args.map(String).join(" ")
+                );
+            }
+
+        };
+
+
+        try {
+
+            const runner = new Function(
+                "console",
+                `"use strict";\n${rawCode}`
+            );
+
+            runner(fakeConsole);
+
+            return {
+                success: true,
+                logs
+            };
+
+        } catch (error) {
+
+            return {
+                success: false,
+                error
+            };
+
+        }
+
+    }
+
+
+    /* =========================================================
+       ANALYZE
+    ========================================================= */
+
+    function startAnalysis() {
+
+        lastFixMode = false;
+
+        const rawCode = codeInput.value;
+        const lines = rawCode.split("\n");
+
+        updateLineNumbers(lines.length);
+
+        currentErrors = [];
+
+
+        /* Syntax */
+
+        currentErrors = scanSyntax(lines);
+
+
+        /* Runtime */
+
+        if (currentErrors.length === 0) {
+
+            const result = runSandbox(rawCode);
+
+            if (!result.success) {
+
+                currentErrors.push({
+                    line: findRuntimeLine(result.error, lines),
+                    type: "RuntimeError",
+                    msg: result.error.message,
+                    code: lines[findRuntimeLine(result.error, lines) - 1] || ""
+                });
+
+            } else {
+
+                let output = "🟢 [Success] โค้ดประมวลผลสำเร็จ";
+
+                if (result.logs.length > 0) {
+
+                    output += "\n\n📟 Console Output:\n";
+                    output += result.logs.join("\n");
+
+                }
+
+                consoleOutput.innerText = output;
+
+                consoleOutput.className =
+                    "bg-emerald-950/30 border border-emerald-500/30 text-emerald-400 rounded-xl p-4 font-mono text-xs min-h-[80px] w-full";
+
+                autofixBtn.style.display = "none";
+
+            }
+
+        }
+
+
+        renderVisuals(lines, currentErrors);
+
+    }
+
+
+    /* =========================================================
+       FIND RUNTIME LINE
+    ========================================================= */
+
+    function findRuntimeLine(error, lines) {
+
+        const stack = String(error.stack || "");
+
+        for (let i = lines.length - 1; i >= 0; i--) {
+
+            const codePart = lines[i].trim();
+
+            if (codePart && stack.includes(codePart)) {
+                return i + 1;
+            }
+
+        }
+
+        return lines.length;
+
+    }
+
+
+    /* =========================================================
+       RENDER ERROR UI
+    ========================================================= */
+
+    function renderVisuals(lines, errors) {
+
+        updateEditorVisual(lines, errors);
+
+        errorList.innerHTML = "";
+
+
+        if (errors.length > 0) {
+
+            consoleOutput.innerText =
+                "❌ Simulation Interrupted: โค้ดมี Error ระบบจำลองถูกหยุดลง";
+
+            consoleOutput.className =
+                "bg-rose-950/30 border border-rose-500/30 text-rose-400 rounded-xl p-4 font-mono text-xs min-h-[80px] w-full";
+
+
+            autofixBtn.style.display = "flex";
+
+
+            errors.forEach(error => {
+
+                const card = document.createElement("div");
+
+                card.className =
+                    "bg-[#151D30] border-l-4 border-purple-500 p-3 rounded-r-xl text-xs flex justify-between items-start gap-2 shadow animate-fade-in";
+
+
+                const content = document.createElement("div");
+
+                content.className = "flex-1";
+
+
+                const title = document.createElement("div");
+
+                title.className = "font-bold text-rose-400 mb-0.5";
+
+                title.textContent =
+                    `[บรรทัดที่ ${error.line}] ${error.type}`;
+
+
+                const message = document.createElement("div");
+
+                message.className =
+                    "text-slate-300 font-mono mb-2";
+
+                message.textContent = error.msg;
+
+
+                const copyButton = document.createElement("button");
+
+                copyButton.className =
+                    "text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded cursor-pointer hover:bg-slate-700";
+
+                copyButton.textContent = "📋 Copy ข้อความนี้";
+
+                copyButton.onclick = () => {
+
+                    copyCustomText(
+                        `${error.type}: ${error.msg} ที่บรรทัด ${error.line}`
+                    );
+
+                };
+
+
+                content.appendChild(title);
+                content.appendChild(message);
+                content.appendChild(copyButton);
+
+
+                const pullButton = document.createElement("button");
+
+                pullButton.className =
+                    "shrink-0 bg-purple-900/50 text-purple-300 hover:bg-purple-600 hover:text-white px-2.5 py-1 rounded-md transition font-medium text-[11px] cursor-pointer";
+
+                pullButton.textContent =
+                    "🛠️ ดึงจุดนี้ไปแก้";
+
+                pullButton.onclick = () => {
+
+                    pullCodeToFix(error.line);
+
+                };
+
+
+                card.appendChild(content);
+                card.appendChild(pullButton);
+
+                errorList.appendChild(card);
+
+            });
+
+        } else {
+
+            autofixBtn.style.display = "none";
+
+            if (lastFixMode) {
+
+                consoleOutput.innerText =
+                    "✨ [Auto-Fixed] ระบบแก้ไขโค้ดและตรวจสอบซ้ำเรียบร้อยแล้ว";
+
+                consoleOutput.className =
+                    "bg-emerald-950/30 border border-emerald-500/30 text-emerald-400 rounded-xl p-4 font-mono text-xs min-h-[80px] w-full";
+
+                errorList.innerHTML = `
+                    <div class="text-center text-emerald-400 text-xs py-8 font-bold">
+                        🛠️ แก้ไขข้อผิดพลาดทั้งหมดสำเร็จ!
+                    </div>
+                `;
+
+            } else {
+
+                errorList.innerHTML = `
+                    <div class="text-center text-emerald-400 text-xs py-8">
+                        ✨ สมบูรณ์แบบ! ไม่พบข้อผิดพลาด
+                    </div>
+                `;
+
+            }
+
+        }
+
+    }
+
+
+    /* =========================================================
+       ANALYZE BUTTON
+    ========================================================= */
+
+    analyzeBtn.addEventListener("click", () => {
+
+        lastFixMode = false;
+
+        analyzeBtn.className =
+            "bg-rose-600 text-white font-bold px-6 py-2.5 rounded-xl shadow-lg shadow-rose-600/20 transition-all duration-200 cursor-wait flex items-center gap-2 text-sm";
+
+        analyzeBtn.innerHTML =
+            "<span>⏳</span> กำลังวิเคราะห์...";
+
+
+        setTimeout(() => {
+
+            startAnalysis();
+
+            analyzeBtn.className =
+                "bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-6 py-2.5 rounded-xl shadow-lg shadow-emerald-500/20 transition-all duration-200 cursor-pointer flex items-center gap-2 text-sm";
+
+            analyzeBtn.innerHTML =
+                "<span>🚀</span> วิเคราะห์โค้ด";
+
+        }, 500);
+
+    });
+
+
+    /* =========================================================
+       AUTO FIX ENGINE
+    ========================================================= */
+
+    function autoFixCode(source) {
+
+        let code = source;
+
+
+        /* -----------------------------------------
+           1. Fix spelling
+        ----------------------------------------- */
+
+        code = code.replace(/\bfuncton\b/g, "function");
+
+        code = code.replace(/\bconsoel\b/g, "console");
+
+
+        /* -----------------------------------------
+           2. Fix console.log(...)
+           
+           ตัวอย่าง:
+           console.log(name;
+           ->
+           console.log(name);
+        ----------------------------------------- */
+
+        const lines = code.split("\n");
+
+        const fixedLines = lines.map(line => {
+
+            let fixed = line;
+
+
+            if (fixed.includes("console.log")) {
+
+                const openCount =
+                    (fixed.match(/\(/g) || []).length;
+
+                const closeCount =
+                    (fixed.match(/\)/g) || []).length;
+
+
+                if (openCount > closeCount) {
+
+                    const missing =
+                        openCount - closeCount;
+
+
+                    /* ถ้ามี ; อยู่ท้ายบรรทัด
+                       ใส่ ) ก่อน ; */
+
+                    if (/;\s*$/.test(fixed)) {
+
+                        fixed = fixed.replace(
+                            /;\s*$/,
+                            ")".repeat(missing) + ";"
+                        );
+
+                    } else {
+
+                        fixed += ")".repeat(missing);
+
+                    }
+
+                }
+
+            }
+
+
+            return fixed;
+
+        });
+
+
+        code = fixedLines.join("\n");
+
+
+        /* -----------------------------------------
+           3. Fix missing braces
+        ----------------------------------------- */
+
+        const openBraces =
+            (code.match(/{/g) || []).length;
+
+        const closeBraces =
+            (code.match(/}/g) || []).length;
+
+
+        if (openBraces > closeBraces) {
+
+            code +=
+                "\n" +
+                "}".repeat(openBraces - closeBraces);
+
+        }
+
+
+        /* -----------------------------------------
+           4. Fix simple missing semicolon
+           
+           ไม่บังคับเติมทุกบรรทัด เพราะ JavaScript
+           สามารถใช้ ASI ได้
+        ----------------------------------------- */
+
+        return code;
+
+    }
+
+
+    /* =========================================================
+       AUTO FIX BUTTON
+    ========================================================= */
+
+    autofixBtn.addEventListener("click", () => {
+
+        const originalCode = codeInput.value;
+
+        const fixedCode = autoFixCode(originalCode);
+
+        codeInput.value = fixedCode;
+
+        lastFixMode = true;
+
+        autofixBtn.style.display = "none";
+
+
+        /* ตรวจสอบซ้ำ */
+
+        const lines = fixedCode.split("\n");
+
+        updateLineNumbers(lines.length);
+
+        const errorsAfterFix = scanSyntax(lines);
+
+
+        if (errorsAfterFix.length === 0) {
+
+            const runtime = runSandbox(fixedCode);
+
+            if (runtime.success) {
+
+                updateEditorVisual(lines, []);
+
+                consoleOutput.innerText =
+                    "✨ [AUTO-FIX SUCCESS] แก้ไขและทดสอบโค้ดเรียบร้อยแล้ว";
+
+                consoleOutput.className =
+                    "bg-emerald-950/30 border border-emerald-500/30 text-emerald-400 rounded-xl p-4 font-mono text-xs min-h-[80px] w-full";
+
+                errorList.innerHTML = `
+                    <div class="text-center text-emerald-400 text-xs py-8 font-bold">
+                        🛠️ แก้ไขข้อผิดพลาดสำเร็จ และ Sandbox รันผ่านแล้ว!
+                    </div>
+                `;
+
+                currentErrors = [];
+
+            } else {
+
+                lastFixMode = false;
+
+                currentErrors = [{
+                    line: findRuntimeLine(runtime.error, lines),
+                    type: "RuntimeError",
+                    msg: runtime.error.message,
+                    code: lines[findRuntimeLine(runtime.error, lines) - 1] || ""
+                }];
+
+                renderVisuals(lines, currentErrors);
+
+            }
+
+        } else {
+
+            lastFixMode = false;
+
+            currentErrors = errorsAfterFix;
+
+            renderVisuals(lines, currentErrors);
+
+        }
+
+    });
+
+
+    /* =========================================================
+       PATCH TOOL
+    ========================================================= */
+
+    window.pullCodeToFix = function(lineNum) {
+
+        activeErrorLine = lineNum;
+
+        const lines = codeInput.value.split("\n");
+
+        patchTarget.innerText =
+            `ดึงข้อมูลจากบรรทัดที่: ${lineNum}`;
+
+        patchInput.value =
+            lines[lineNum - 1] || "";
+
+        patchInput.removeAttribute("disabled");
+
+        patchSubmitBtn.removeAttribute("disabled");
+
+        patchInput.focus();
+
+    };
+
+
+    patchSubmitBtn.addEventListener("click", () => {
+
+        if (activeErrorLine === null) {
+            return;
+        }
+
+
+        const lines =
+            codeInput.value.split("\n");
+
+
+        lines[activeErrorLine - 1] =
+            patchInput.value;
+
+
+        codeInput.value =
+            lines.join("\n");
+
+
+        patchInput.value = "";
+
+        patchTarget.innerText =
+            "ซ่อมแซมส่งคืนสำเร็จ!";
+
+        patchInput.setAttribute(
+            "disabled",
+            "true"
+        );
+
+        patchSubmitBtn.setAttribute(
+            "disabled",
+            "true"
+        );
+
+        activeErrorLine = null;
+
+        lastFixMode = false;
+
+        startAnalysis();
+
+    });
+
+
+    /* =========================================================
+       COPY
+    ========================================================= */
+
+    window.copyToClipboard = async function(elementId) {
+
+        const element =
+            document.getElementById(elementId);
+
+        const text =
+            element.value !== undefined
+                ? element.value
+                : element.innerText;
+
+
+        try {
+
+            await navigator.clipboard.writeText(text);
+
+            alert("📋 คัดลอกข้อความสำเร็จ!");
+
+        } catch {
+
+            const temp =
+                document.createElement("textarea");
+
+            temp.value = text;
+
+            document.body.appendChild(temp);
+
+            temp.select();
+
+            document.execCommand("copy");
+
+            temp.remove();
+
+            alert("📋 คัดลอกข้อความสำเร็จ!");
+
+        }
+
+    };
+
+
+    window.copyText = async function(elementId) {
+
+        const element =
+            document.getElementById(elementId);
+
+        const text =
+            element.innerText;
+
+
+        try {
+
+            await navigator.clipboard.writeText(text);
+
+            alert("📋 คัดลอกผลลัพธ์สำเร็จ!");
+
+        } catch {
+
+            alert("ไม่สามารถคัดลอกอัตโนมัติได้");
+
+        }
+
+    };
+
+
+    window.copyCustomText = async function(text) {
+
+        try {
+
+            await navigator.clipboard.writeText(text);
+
+            alert("📋 คัดลอกข้อความแจ้งเตือนสำเร็จ!");
+
+        } catch {
+
+            alert(text);
+
+        }
+
+    };
+
+
+    /* =========================================================
+       SCROLL SYNC
+    ========================================================= */
+
+    codeInput.addEventListener("scroll", () => {
+
+        editorOverlay.scrollTop =
+            codeInput.scrollTop;
+
+        editorOverlay.scrollLeft =
+            codeInput.scrollLeft;
+
+        lineNumbers.scrollTop =
+            codeInput.scrollTop;
+
+    });
+
+
+    /* =========================================================
+       INPUT UPDATE
+    ========================================================= */
+
+    codeInput.addEventListener("input", () => {
+
+        lastFixMode = false;
+
+        const lines =
+            codeInput.value.split("\n");
+
+        updateLineNumbers(lines.length);
+
+        updateEditorVisual(lines, []);
+
+    });
+
+
+    /* =========================================================
+       INITIALIZE
+    ========================================================= */
+
+    window.addEventListener("load", () => {
+
+        const lines =
+            codeInput.value.split("\n");
+
+        updateLineNumbers(lines.length);
+
+        updateEditorVisual(lines, []);
+
+    });
+
+</script>
+
+</body>
+</html>
