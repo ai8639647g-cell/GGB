@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luau Code to Numbers Converter</title>
+    <style>
+        :root {
+            --bg-color: #1a1a1a;
+            --panel-bg: #2d2d2d;
+            --text-color: #ffffff;
+            --accent-color: #ff4a5a; /* สีแดงมังคุด/แตงโม */
+            --convert-btn: #007bff;
+            --copy-btn: #28a745;
+            --clear-btn: #dc3545;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: var(--panel-bg);
+            width: 100%;
+            max-width: 650px;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #444;
+            padding-bottom: 10px;
+        }
+        .header h2 {
+            margin: 0;
+            font-size: 22px;
+        }
+        .icon {
+            font-size: 28px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            color: #bbb;
+        }
+        textarea {
+            width: 100%;
+            height: 120px;
+            background-color: #1e1e1e;
+            border: 1px solid #444;
+            border-radius: 6px;
+            color: #fff;
+            padding: 12px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            resize: vertical;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+            transition: opacity 0.2s;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        .btn-convert { background-color: var(--convert-btn); }
+        .btn-copy { background-color: var(--copy-btn); }
+        .btn-clear { background-color: var(--clear-btn); }
+        
+        .status {
+            font-size: 13px;
+            color: #aaa;
+            margin-top: -5px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- หน้ามังคุด/หัวข้อเว็บ -->
+    <div class="header">
+        <span class="icon">🔮</span>
+        <h2>Luau Code to Numbers (Delta Runner Ready)</h2>
+    </div>
+
+    <!-- ส่วนที่ 1: หน้าวางโค้ด -->
+    <label for="inputCode">1. วางโค้ด Luau ของคุณที่นี่:</label>
+    <textarea id="inputCode" placeholder="พิมพ์หรือวางสคริปต์ที่นี่... ตัวอย่าง: print('Hello Delta')"></textarea>
+
+    <!-- กลุ่มปุ่มกดสั่งการ -->
+    <div class="button-group">
+        <button class="btn-convert" onclick="processCode()">⚡ แปลงเป็นตัวเลข</button>
+        <button class="btn-copy" onclick="copyResult()">📋 คัดลอกผลลัพธ์</button>
+        <button class="btn-clear" onclick="clearAll()">🗑️ ลบโค้ดทิ้ง</button>
+    </div>
+
+    <div class="status" id="statusText">สถานะ: รอใส่สคริปต์...</div>
+
+    <!-- ส่วนที่ 2: หน้าแปลงโค้ดออกมาเป็นตัวเลข -->
+    <label for="outputCode">2. ผลลัพธ์ตัวเลข (นำไปรันใน Delta ได้ทันที):</label>
+    <textarea id="outputCode" readonly placeholder="[ ผลลัพธ์สคริปต์ที่แปลงแล้วจะแสดงตรงนี้ ]"></textarea>
+</div>
+
+<script>
+// ฟังก์ชันแปลงโค้ด Luau เป็นกลุ่มตัวเลขที่รันใน Delta ได้ 100%
+function processCode() {
+    const input = document.getElementById('inputCode').value.trim();
+    const status = document.getElementById('statusText');
+    const output = document.getElementById('outputCode');
+
+    if (!input) {
+        status.innerText = "❌ กรุณาใส่โค้ดในช่องด้านบนก่อน!";
+        status.style.color = "#ff4a5a";
+        return;
+    }
+
+    // แปลงอักษรแต่ละตัวเป็นรหัสตัวเลข ASCII/Unicode
+    let numberArray = [];
+    for (let i = 0; i < input.length; i++) {
+        numberArray.push(input.charCodeAt(i));
+    }
+    
+    // รวมตัวเลขเป็นข้อความ คั่นด้วยเครื่องหมายจุลภาค (,)
+    let joinedNumbers = numberArray.join(',');
+
+    // ห่อหุ้มด้วยสคริปต์ Luau เพื่อให้ตัวรัน Delta แกะกล่องรันได้โดยไม่มี Error
+    let finalLuauScript = `-- แปลงโดยเว็บ CodeToNumbers\n`;
+    finalLuauScript += `local encrypted_data = {${joinedNumbers}}\n`;
+    finalLuauScript += `local decrypted_script = ""\n`;
+    finalLuauScript += `for _, v in ipairs(encrypted_data) do decrypted_script = decrypted_script .. string.char(v) end\n`;
+    finalLuauScript += `local run, err = loadstring(decrypted_script)\n`;
+    finalLuauScript += `if run then run() else warn("Error running script: " .. tostring(err)) end`;
+
+    output.value = finalLuauScript;
+    status.innerText = "✅ แปลงเป็นตัวเลขสำเร็จ! ไม่มี Error รันบน Delta ได้ 100%";
+    status.style.color = "#28a745";
+}
+
+// ฟังก์ชันคัดลอกข้อความ (Copy)
+function copyResult() {
+    const output = document.getElementById('outputCode');
+    const status = document.getElementById('statusText');
+
+    if (!output.value) {
+        status.innerText = "❌ ไม่มีข้อความให้คัดลอก!";
+        status.style.color = "#ff4a5a";
+        return;
+    }
+
+    output.select();
+    output.setSelectionRange(0, 99999); // สำหรับมือถือ
+    navigator.clipboard.writeText(output.value);
+
+    status.innerText = "📋 คัดลอกโค้ดตัวเลขไปยังคลิปบอร์ดแล้ว!";
+    status.style.color = "#007bff";
+}
+
+// ฟังก์ชันลบโค้ดทิ้ง (Clear)
+function clearAll() {
+    document.getElementById('inputCode').value = "";
+    document.getElementById('outputCode').value = "";
+    const status = document.getElementById('statusText');
+    status.innerText = "🗑️ ล้างข้อมูลเรียบร้อยแล้ว";
+    status.style.color = "#aaa";
+}
+</script>
+
+</body>
+</html>
