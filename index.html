@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>⚡ VAULT-LUAU OBFUSCATOR PRO v5</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;900&family=Sarabun:wght@400;600&display=swap');
+
+        :root {
+            --bg-dark: #06060c;
+            --panel-bg: rgba(12, 12, 20, 0.85);
+            --neon-red: #ff0055;
+            --neon-cyan: #00f0ff;
+            --neon-amber: #ffaa00;
+            --text-color: #f0f0f5;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: var(--bg-dark);
+            background-image:
+                radial-gradient(
+                    at 10% 20%,
+                    rgba(255, 0, 85, 0.12) 0px,
+                    transparent 40%
+                ),
+                radial-gradient(
+                    at 90% 80%,
+                    rgba(0, 240, 255, 0.12) 0px,
+                    transparent 40%
+                );
+            color: var(--text-color);
+            margin: 0;
+            padding: 30px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .vault-container {
+            background: var(--panel-bg);
+            backdrop-filter: blur(15px);
+            border: 2px solid var(--neon-red);
+            box-shadow:
+                0 0 40px rgba(255, 0, 85, 0.25),
+                inset 0 0 20px rgba(0, 240, 255, 0.05);
+            width: 100%;
+            max-width: 1200px;
+            padding: 40px;
+            border-radius: 16px;
+            position: relative;
+        }
+
+        .vault-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(
+                90deg,
+                var(--neon-red),
+                var(--neon-cyan)
+            );
+            border-radius: 16px 16px 0 0;
+        }
+
+        .vault-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 20px;
+            margin-bottom: 35px;
+        }
+
+        .vault-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 30px;
+            font-weight: 900;
+            letter-spacing: 3px;
+            background: linear-gradient(
+                45deg,
+                var(--neon-red),
+                var(--neon-cyan)
+            );
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .vault-icon {
+            font-size: 32px;
+            filter: drop-shadow(0 0 8px var(--neon-red));
+        }
+
+        .vault-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 35px;
+        }
+
+        @media (max-width: 900px) {
+            .vault-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .editor-section {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-family: 'Orbitron', 'Sarabun', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: var(--neon-cyan);
+            margin-bottom: 12px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 380px;
+            background: #040408;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 8px;
+            color: #fff;
+            padding: 18px;
+            font-family: monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            resize: none;
+            transition: all 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--neon-red);
+            box-shadow: 0 0 20px rgba(255, 0, 85, 0.2);
+        }
+
+        .output-box {
+            color: #a8ffb2;
+            background: #020204;
+        }
+
+        .action-bar {
+            grid-column: 1 / -1;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        button {
+            font-family: 'Orbitron', 'Sarabun', sans-serif;
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: 1px;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #fff;
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        .btn-obfuscate {
+            background: linear-gradient(
+                135deg,
+                #ff0055,
+                #bc003f
+            );
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.3);
+        }
+
+        .btn-obfuscate:hover {
+            box-shadow: 0 0 25px rgba(255, 0, 85, 0.6);
+        }
+
+        .btn-copy {
+            background: linear-gradient(
+                135deg,
+                #00bfff,
+                #00b0bd
+            );
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+            color: #000;
+        }
+
+        .btn-copy:hover {
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.6);
+        }
+
+        .btn-clear {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-clear:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: #fff;
+        }
+
+        .footer-status {
+            margin-top: 25px;
+            font-size: 12px;
+            padding: 10px 15px;
+            background: rgba(0, 0, 0, 0.5);
+            border-left: 4px solid var(--neon-amber);
+            border-radius: 0 6px 6px 0;
+            color: #bbb;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .secure-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--neon-amber);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 170, 0, 0.5);
+            }
+
+            70% {
+                box-shadow: 0 0 0 8px rgba(255, 170, 0, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 170, 0, 0);
+            }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 12px;
+            }
+
+            .vault-container {
+                padding: 20px;
+            }
+
+            .vault-title {
+                font-size: 18px;
+                letter-spacing: 1px;
+            }
+
+            .vault-icon {
+                font-size: 24px;
+            }
+
+            .action-bar {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="vault-container">
+
+    <div class="vault-header">
+        <div class="vault-title">
+            🔒 VAULT LUAU ANTI-DECOMPILE CORE
+        </div>
+
+        <div class="vault-icon">
+            🔮
+        </div>
+    </div>
+
+    <div class="vault-grid">
+
+        <div class="editor-section">
+
+            <label>
+                📝 INPUT: โค้ดต้นฉบับภาษา Luau
+            </label>
+
+            <textarea
+                id="srcInput"
+                placeholder="-- วางสคริปต์ Luau ที่ต้องการแปลงที่นี่...
+print('Hello Delta Executor')"
+            ></textarea>
+
+        </div>
+
+        <div class="editor-section">
+
+            <label style="color: var(--neon-red);">
+                🛰️ OUTPUT: ผลลัพธ์
+            </label>
+
+            <textarea
+                id="cryptOutput"
+                class="output-box"
+                readonly
+                placeholder="[ ผลลัพธ์จะแสดงตรงนี้หลังจากกดปุ่มแปลง ]"
+            ></textarea>
+
+        </div>
+
+        <div class="action-bar">
+
+            <button
+                class="btn-clear"
+                onclick="clearWorkspace()"
+            >
+                🗑️ ล้างหน้าจอ
+            </button>
+
+            <button
+                class="btn-copy"
+                onclick="copyToClipboard()"
+            >
+                📋 คัดลอกผลลัพธ์
+            </button>
+
+            <button
+                class="btn-obfuscate"
+                onclick="obfuscateCore()"
+            >
+                ⚡ แปลงและปกป้องโค้ด
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="footer-status">
+
+        <div
+            class="secure-dot"
+            id="dot"
+        ></div>
+
+        <span id="statusTxt">
+            ระบบพร้อมใช้งาน
+        </span>
+
+    </div>
+
+</div>
+
+
+<script>
+
+function setLog(text, isSuccess) {
+
+    const txt = document.getElementById("statusTxt");
+    const dot = document.getElementById("dot");
+
+    txt.innerText = "ระบบ: " + text;
+
+    if (isSuccess) {
+
+        dot.style.backgroundColor = "#00f0ff";
+        txt.style.color = "#00f0ff";
+
+    } else {
+
+        dot.style.backgroundColor = "var(--neon-amber)";
+        txt.style.color = "#bbb";
+
+    }
+}
+
+
+function obfuscateCore() {
+
+    const source =
+        document.getElementById("srcInput").value;
+
+    if (!source.trim()) {
+
+        setLog(
+            "กรุณาใส่สคริปต์ต้นฉบับก่อนทำการแปลง!",
+            false
+        );
+
+        return;
+    }
+
+
+    /*
+     * แปลงตัวอักษรเป็นตัวเลข
+     */
+    const payload = [];
+
+    for (let i = 0; i < source.length; i++) {
+
+        const ascii = source.charCodeAt(i);
+
+        const dynamicMath =
+            (ascii ^ (i % 7)) +
+            (i * 2) -
+            5;
+
+        payload.push(dynamicMath);
+    }
+
+
+    /*
+     * สร้าง junk data
+     */
+    let junkData = "";
+
+    for (let j = 0; j < 30; j++) {
+
+        const fakeArr = [];
+
+        for (let k = 0; k < 15; k++) {
+
+            fakeArr.push(
+                Math.floor(
+                    Math.random() * 500 + 100
+                )
+            );
+
+        }
+
+        junkData +=
+            `local _j${j} = {${fakeArr.join(",")}}\n`;
+
+        junkData +=
+            `if #_j${j} == 999 then ` +
+            `pcall(function() ` +
+            `print(_j${j}[1]) ` +
+            `end) ` +
+            `end\n`;
+    }
+
+
+    const dataString = payload.join(",");
+
+
+    /*
+     * สร้าง Luau Script
+     *
+     * จุดสำคัญ:
+     * ใช้ template literal ตัวเดียว
+     * ไม่เอา ; ไปต่อกับ JavaScript
+     */
+    let finalScript = "";
+
+    finalScript +=
+        "--[[ PROTECTED BY VAULT ANTI-DECOMPILE v5 ]]--\n";
+
+    finalScript +=
+        "if not game:IsLoaded() then " +
+        "game.Loaded:Wait() " +
+        "end\n";
+
+    finalScript += junkData;
+
+    finalScript +=
+        `local _vD = {${dataString}}\n`;
+
+    finalScript +=
+        'local _rS = ""\n';
+
+    finalScript +=
+        "for i = 1, #_vD do\n";
+
+    finalScript +=
+        "    local _idx = i - 1\n";
+
+    finalScript +=
+        "    local _orig = bit32.bxor(" +
+        "(_vD[i] + 5 - (_idx * 2)), " +
+        "(_idx % 7)" +
+        ")\n";
+
+    finalScript +=
+        "    _rS = _rS .. string.char(_orig)\n";
+
+    finalScript +=
+        "end\n";
+
+    finalScript +=
+        "local _exec, _err = loadstring(_rS)\n";
+
+    finalScript +=
+        'if _exec then\n';
+
+    finalScript +=
+        '    task.spawn(_exec)\n';
+
+    finalScript +=
+        'else\n';
+
+    finalScript +=
+        '    warn("[VAULT] Fatal Execution Failure: " .. tostring(_err))\n';
+
+    finalScript +=
+        "end\n";
+
+    finalScript +=
+        "--[[ END VAULT ]]";
+
+
+    /*
+     * แสดงผล
+     */
+    document.getElementById(
+        "cryptOutput"
+    ).value = finalScript;
+
+
+    setLog(
+        "แปลงโค้ดเรียบร้อยแล้ว!",
+        true
+    );
+}
+
+
+async function copyToClipboard() {
+
+    const out =
+        document.getElementById("cryptOutput");
+
+    if (!out.value) {
+
+        setLog(
+            "ไม่มีข้อมูลรหัสให้คัดลอก!",
+            false
+        );
+
+        return;
+    }
+
+
+    try {
+
+        await navigator.clipboard.writeText(
+            out.value
+        );
+
+        setLog(
+            "คัดลอกผลลัพธ์ลงคลิปบอร์ดแล้ว!",
+            true
+        );
+
+    } catch (error) {
+
+        /*
+         * สำรองกรณี browser ไม่อนุญาต clipboard API
+         */
+        out.focus();
+        out.select();
+
+        try {
+
+            document.execCommand("copy");
+
+            setLog(
+                "คัดลอกผลลัพธ์แล้ว!",
+                true
+            );
+
+        } catch (e) {
+
+            setLog(
+                "ไม่สามารถคัดลอกอัตโนมัติได้ กรุณากดค้างแล้วเลือก Copy",
+                false
+            );
+
+        }
+    }
+}
+
+
+function clearWorkspace() {
+
+    document.getElementById(
+        "srcInput"
+    ).value = "";
+
+    document.getElementById(
+        "cryptOutput"
+    ).value = "";
+
+    setLog(
+        "ล้างเวิร์กสเปซเรียบร้อยแล้ว ระบบสแตนด์บาย",
+        false
+    );
+}
+
+</script>
+
+</body>
+</html>
