@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Lua Number Converter</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 20px;
+    background: #101114;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+.app {
+    max-width: 700px;
+    margin: auto;
+}
+
+h1 {
+    text-align: center;
+}
+
+p {
+    text-align: center;
+    color: #aaa;
+}
+
+textarea {
+    width: 100%;
+    height: 220px;
+    padding: 15px;
+    margin-top: 10px;
+    background: #1b1d22;
+    color: white;
+    border: 1px solid #444;
+    border-radius: 12px;
+    font-size: 15px;
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    margin-top: 12px;
+    border: none;
+    border-radius: 10px;
+    background: #2589ed;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.secondary {
+    background: #333;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<h1>Lua Number Converter</h1>
+
+<p>ตัวจำลองสำหรับทดลอง</p>
+
+<textarea
+id="input"
+placeholder="วางโค้ด Lua ของคุณที่นี่..."
+></textarea>
+
+<button onclick="convertLua()">
+แปลงเป็นตัวเลข
+</button>
+
+<textarea
+id="output"
+readonly
+placeholder="ผลลัพธ์จะแสดงตรงนี้..."
+></textarea>
+
+<button class="secondary" onclick="copyResult()">
+คัดลอกผลลัพธ์
+</button>
+
+<button class="secondary" onclick="clearAll()">
+ล้าง
+</button>
+
+</div>
+
+<script>
+
+function convertLua() {
+
+    const input =
+        document.getElementById("input").value;
+
+    if (!input.trim()) {
+
+        alert("กรุณาวางโค้ด Lua ก่อน");
+
+        return;
+    }
+
+    const numbers =
+        Array.from(input)
+        .map(character => character.codePointAt(0));
+
+    document.getElementById("output").value =
+        numbers.join(" ");
+}
+
+
+function copyResult() {
+
+    const output =
+        document.getElementById("output");
+
+    if (!output.value) {
+
+        alert("ยังไม่มีผลลัพธ์");
+
+        return;
+    }
+
+    navigator.clipboard.writeText(output.value);
+
+    alert("คัดลอกแล้ว");
+}
+
+
+function clearAll() {
+
+    document.getElementById("input").value = "";
+
+    document.getElementById("output").value = "";
+}
+
+</script>
+
+</body>
+</html>
