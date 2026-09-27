@@ -1,0 +1,2236 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Ultimate Web OS Developer Hub v3.1</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            min-height: 100%;
+        }
+
+        body {
+            font-family: 'Prompt', sans-serif;
+            background:
+                radial-gradient(circle at 10% 10%, rgba(6, 182, 212, 0.08), transparent 30%),
+                radial-gradient(circle at 90% 10%, rgba(217, 70, 239, 0.08), transparent 30%),
+                #070a13;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        .code-font {
+            font-family: 'Fira Code', monospace;
+        }
+
+        .cyber-panel {
+            background: rgba(15, 23, 42, 0.72);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(56, 189, 248, 0.20);
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.37),
+                inset 0 1px 0 rgba(255,255,255,0.02);
+        }
+
+        .neon-glow-cyan:focus {
+            outline: none;
+            border-color: #06b6d4;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
+        }
+
+        .neon-border-glow {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .neon-border-glow::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 1px;
+            background: linear-gradient(
+                135deg,
+                #06b6d4,
+                #d946ef
+            );
+
+            -webkit-mask:
+                linear-gradient(#fff 0 0) content-box,
+                linear-gradient(#fff 0 0);
+
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+
+            pointer-events: none;
+            opacity: 0.45;
+            transition: opacity 0.3s;
+        }
+
+        .neon-border-glow:hover::after {
+            opacity: 1;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #38bdf8;
+        }
+
+        .preview-container {
+            transition:
+                width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .line-numbers {
+            min-width: 46px;
+            user-select: none;
+            overflow: hidden;
+        }
+
+        .editor-wrap {
+            min-height: 430px;
+        }
+
+        .editor-textarea {
+            tab-size: 2;
+        }
+
+        .status-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 999px;
+            display: inline-block;
+        }
+
+        .status-online {
+            background: #22c55e;
+            box-shadow: 0 0 12px rgba(34,197,94,.8);
+        }
+
+        .status-error {
+            background: #ef4444;
+            box-shadow: 0 0 12px rgba(239,68,68,.8);
+        }
+
+        .status-running {
+            background: #06b6d4;
+            box-shadow: 0 0 12px rgba(6,182,212,.8);
+        }
+
+        .device-frame {
+            background: #020617;
+            border: 1px solid #1e293b;
+            box-shadow:
+                0 20px 60px rgba(0,0,0,.45),
+                0 0 30px rgba(6,182,212,.06);
+        }
+
+        .console-line {
+            word-break: break-word;
+            white-space: pre-wrap;
+        }
+
+        .toast {
+            transition:
+                transform .25s ease,
+                opacity .25s ease;
+        }
+
+        @keyframes spin-slow {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .animate-spin-slow {
+            animation: spin-slow 10s linear infinite;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 8px !important;
+            }
+
+            .editor-wrap {
+                min-height: 360px;
+            }
+        }
+    </style>
+</head>
+
+<body class="p-4 min-h-screen flex flex-col gap-4">
+
+    <!-- =========================================================
+         TOP BAR
+    ========================================================== -->
+    <header class="cyber-panel neon-border-glow rounded-xl p-4">
+
+        <div class="flex flex-wrap items-center justify-between gap-4">
+
+            <!-- Logo -->
+            <div class="flex items-center gap-3">
+
+                <div
+                    class="w-4 h-4 rounded-full bg-cyan-500 animate-pulse"
+                    style="box-shadow:0 0 15px #06b6d4"
+                ></div>
+
+                <div>
+                    <h1
+                        class="text-xl font-bold tracking-wider bg-gradient-to-r from-cyan-400 to-fuchsia-500 bg-clip-text text-transparent"
+                    >
+                        WEB OS DEVELOPER HUB
+                        <span class="text-xs text-slate-400 font-mono">
+                            v3.1
+                        </span>
+                    </h1>
+
+                    <div class="text-[10px] text-slate-500">
+                        Browser-based development workspace
+                    </div>
+                </div>
+            </div>
+
+            <!-- Language -->
+            <div class="flex items-center gap-2">
+
+                <span class="text-xs text-slate-400 font-medium">
+                    <i class="fa-solid fa-code text-cyan-400"></i>
+                    เลือกภาษา:
+                </span>
+
+                <select
+                    id="languageSelect"
+                    class="bg-slate-900 border border-slate-700 text-cyan-400 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-cyan-400 cursor-pointer"
+                >
+                    <option value="html">
+                        HTML5 / CSS3 / JavaScript
+                    </option>
+
+                    <option value="lua">
+                        Lua Script Engine (Simulation)
+                    </option>
+
+                    <option value="python">
+                        Python Sandbox (Simulation)
+                    </option>
+
+                    <option value="php">
+                        PHP Hypertext (Simulation)
+                    </option>
+
+                    <option value="cpp">
+                        C++ Compiler (Simulation)
+                    </option>
+                </select>
+
+            </div>
+
+            <!-- Viewport -->
+            <div
+                class="flex bg-slate-900/90 p-1 rounded-lg border border-slate-800 gap-1"
+            >
+
+                <button
+                    onclick="changeViewport('desktop')"
+                    id="btn-view-desktop"
+                    class="px-3 py-1.5 rounded-md text-xs font-semibold bg-cyan-600 text-white transition-all"
+                >
+                    <i class="fa-solid fa-desktop mr-1"></i>
+                    Desktop
+                </button>
+
+                <button
+                    onclick="changeViewport('tablet')"
+                    id="btn-view-tablet"
+                    class="px-3 py-1.5 rounded-md text-xs font-semibold text-slate-400 hover:text-white transition-all"
+                >
+                    <i class="fa-solid fa-tablet-screen-button mr-1"></i>
+                    Tablet
+                </button>
+
+                <button
+                    onclick="changeViewport('mobile')"
+                    id="btn-view-mobile"
+                    class="px-3 py-1.5 rounded-md text-xs font-semibold text-slate-400 hover:text-white transition-all"
+                >
+                    <i class="fa-solid fa-mobile-button mr-1"></i>
+                    Mobile
+                </button>
+
+            </div>
+
+        </div>
+    </header>
+
+
+    <!-- =========================================================
+         MAIN DASHBOARD
+    ========================================================== -->
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1">
+
+        <!-- =====================================================
+             LEFT
+        ====================================================== -->
+        <section class="lg:col-span-6 flex flex-col gap-4">
+
+            <!-- STORAGE -->
+            <div class="cyber-panel rounded-xl p-4 flex flex-col gap-3">
+
+                <div
+                    class="text-sm font-semibold text-fuchsia-400 flex items-center gap-2"
+                >
+                    <i class="fa-solid fa-box-archive"></i>
+
+                    ระบบคลังบันทึกโปรเจกต์
+                </div>
+
+                <div class="flex gap-2">
+
+                    <input
+                        type="text"
+                        id="projectName"
+                        placeholder="ตั้งชื่อโปรเจกต์..."
+                        class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm flex-1 text-white neon-glow-cyan"
+                    >
+
+                    <button
+                        onclick="saveProject()"
+                        class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white text-xs font-bold px-4 rounded-lg transition-all"
+                    >
+                        <i class="fa-solid fa-floppy-disk mr-1"></i>
+                        บันทึกงาน
+                    </button>
+
+                </div>
+
+                <div
+                    id="projectList"
+                    class="flex flex-wrap gap-2 max-h-[100px] overflow-y-auto p-2 bg-slate-900/50 rounded-lg border border-slate-800/80"
+                >
+                    <span class="text-xs text-slate-500 p-1 w-full text-center">
+                        ไม่มีโปรเจกต์ที่บันทึกไว้
+                    </span>
+                </div>
+
+            </div>
+
+
+            <!-- CODE EDITOR -->
+            <div
+                class="cyber-panel rounded-xl flex-1 flex flex-col overflow-hidden editor-wrap"
+            >
+
+                <!-- Editor Header -->
+                <div
+                    class="bg-slate-900/90 border-b border-slate-800 px-4 py-2 flex items-center justify-between flex-wrap gap-2"
+                >
+
+                    <!-- Tabs -->
+                    <div
+                        class="flex items-center gap-1 bg-slate-950 p-1 rounded-lg border border-slate-800"
+                        id="editorTabs"
+                    >
+
+                        <button
+                            onclick="switchTab('html')"
+                            id="tab-html"
+                            class="px-3 py-1 rounded text-xs font-medium bg-slate-800 text-cyan-400 border border-cyan-500/30"
+                        >
+                            HTML
+                        </button>
+
+                        <button
+                            onclick="switchTab('css')"
+                            id="tab-css"
+                            class="px-3 py-1 rounded text-xs font-medium text-slate-400 hover:text-white"
+                        >
+                            CSS
+                        </button>
+
+                        <button
+                            onclick="switchTab('js')"
+                            id="tab-js"
+                            class="px-3 py-1 rounded text-xs font-medium text-slate-400 hover:text-white"
+                        >
+                            JavaScript
+                        </button>
+
+                    </div>
+
+                    <!-- Quick Buttons -->
+                    <div class="flex items-center gap-1.5">
+
+                        <button
+                            onclick="loadTemplate()"
+                            class="bg-indigo-600/30 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/40 text-xs px-2.5 py-1 rounded-md transition-all"
+                        >
+                            <i class="fa-solid fa-wand-magic-sparkles mr-1"></i>
+                            Template
+                        </button>
+
+                        <button
+                            onclick="clearWorkspace()"
+                            class="bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/30 text-xs px-2.5 py-1 rounded-md transition-all"
+                        >
+                            <i class="fa-solid fa-trash-can mr-1"></i>
+                            ล้าง
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Editor -->
+                <div
+                    class="flex-1 relative bg-slate-950 flex min-h-[380px]"
+                >
+
+                    <!-- Line Numbers -->
+                    <div
+                        id="lineNumbers"
+                        class="line-numbers bg-slate-900 border-r border-slate-800 text-right pr-3 py-3 text-xs font-mono text-slate-600 leading-6"
+                    >
+                    </div>
+
+
+                    <!-- HTML -->
+                    <textarea
+                        id="code-html"
+                        class="editor-textarea code-font p-3 text-sm bg-transparent text-emerald-400 w-full h-full resize-none focus:outline-none leading-6"
+                        spellcheck="false"
+                        placeholder="เขียน HTML ที่นี่..."
+                    ></textarea>
+
+
+                    <!-- CSS -->
+                    <textarea
+                        id="code-css"
+                        class="editor-textarea code-font p-3 text-sm bg-transparent text-amber-400 w-full h-full resize-none focus:outline-none leading-6 hidden"
+                        spellcheck="false"
+                        placeholder="เขียน CSS ที่นี่..."
+                    ></textarea>
+
+
+                    <!-- JS -->
+                    <textarea
+                        id="code-js"
+                        class="editor-textarea code-font p-3 text-sm bg-transparent text-cyan-400 w-full h-full resize-none focus:outline-none leading-6 hidden"
+                        spellcheck="false"
+                        placeholder="เขียน JavaScript ที่นี่..."
+                    ></textarea>
+
+                </div>
+
+
+                <!-- Toolbar -->
+                <div
+                    class="bg-slate-900/90 border-t border-slate-800 p-3 flex justify-between items-center flex-wrap gap-2"
+                >
+
+                    <div class="flex flex-wrap gap-2">
+
+                        <button
+                            onclick="executeCode()"
+                            class="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-bold px-4 py-2 rounded-lg"
+                        >
+                            <i class="fa-solid fa-play mr-1"></i>
+                            รันระบบ
+                        </button>
+
+                        <button
+                            onclick="copyCombinedCode()"
+                            class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs px-3 py-2 rounded-lg border border-slate-700"
+                        >
+                            <i class="fa-solid fa-copy mr-1"></i>
+                            คัดลอกรวมโค้ด
+                        </button>
+
+                        <button
+                            onclick="downloadCode()"
+                            class="bg-emerald-700/40 hover:bg-emerald-600 text-emerald-300 hover:text-white text-xs px-3 py-2 rounded-lg border border-emerald-500/30"
+                        >
+                            <i class="fa-solid fa-download mr-1"></i>
+                            ดาวน์โหลด HTML
+                        </button>
+
+                    </div>
+
+                    <div class="text-[10px] text-slate-500">
+                        Ctrl + Enter = Run
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             RIGHT
+        ====================================================== -->
+        <section class="lg:col-span-6 flex flex-col gap-4">
+
+            <!-- PREVIEW -->
+            <div
+                class="cyber-panel rounded-xl p-4 flex-1 min-h-[500px] flex flex-col"
+            >
+
+                <div
+                    class="flex items-center justify-between mb-3"
+                >
+
+                    <div
+                        class="text-sm font-semibold text-cyan-400 flex items-center gap-2"
+                    >
+                        <i class="fa-solid fa-display"></i>
+                        LIVE SCREEN
+                    </div>
+
+                    <div
+                        class="flex items-center gap-2 text-xs text-slate-500"
+                    >
+                        <span
+                            id="statusDot"
+                            class="status-dot status-online"
+                        ></span>
+
+                        <span id="statusText">
+                            READY
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <!-- Device Area -->
+                <div
+                    class="flex-1 bg-slate-950/80 rounded-xl border border-slate-800 overflow-auto flex items-center justify-center p-4"
+                >
+
+                    <div
+                        id="viewport-wrapper"
+                        class="preview-container device-frame rounded-xl overflow-hidden"
+                        style="width:100%; height:100%; min-height:430px;"
+                    >
+
+                        <iframe
+                            id="preview-screen"
+                            title="Live Preview"
+                            class="w-full h-full min-h-[430px] bg-white border-0"
+                            sandbox="allow-scripts allow-modals allow-forms"
+                        ></iframe>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- CONSOLE -->
+            <div class="cyber-panel rounded-xl overflow-hidden">
+
+                <div
+                    class="bg-slate-900/90 border-b border-slate-800 px-4 py-2 flex items-center justify-between"
+                >
+
+                    <div
+                        class="text-sm font-semibold text-amber-400 flex items-center gap-2"
+                    >
+                        <i class="fa-solid fa-terminal"></i>
+                        RUNTIME CONSOLE
+                    </div>
+
+                    <button
+                        onclick="clearConsole()"
+                        class="text-xs text-slate-400 hover:text-white"
+                    >
+                        Clear
+                    </button>
+
+                </div>
+
+                <div
+                    id="console-output"
+                    class="code-font bg-black/40 p-3 text-xs min-h-[100px] max-h-[180px] overflow-y-auto"
+                >
+                    <div class="console-line text-emerald-400">
+                        [System Status] ระบบพร้อมใช้งาน
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- Toast -->
+    <div
+        id="toast"
+        class="toast fixed bottom-5 left-1/2 -translate-x-1/2 translate-y-20 opacity-0 z-[9999]"
+    >
+
+        <div
+            class="bg-slate-900 border border-cyan-500/40 shadow-2xl rounded-xl px-5 py-3 text-sm text-white"
+        >
+            <span id="toast-text"></span>
+        </div>
+
+    </div>
+
+
+<script>
+/* ============================================================
+   GLOBAL STATE
+============================================================ */
+
+let currentTab = 'html';
+let projects = {};
+
+const STORAGE_KEY = 'mega_dev_hub_projects_v31';
+
+
+/* ============================================================
+   DOM HELPERS
+============================================================ */
+
+function $(id) {
+    return document.getElementById(id);
+}
+
+
+/* ============================================================
+   TOAST
+============================================================ */
+
+function showToast(text) {
+
+    const toast = $('toast');
+    const toastText = $('toast-text');
+
+    toastText.textContent = text;
+
+    toast.classList.remove(
+        'translate-y-20',
+        'opacity-0'
+    );
+
+    clearTimeout(window.__toastTimer);
+
+    window.__toastTimer = setTimeout(() => {
+
+        toast.classList.add(
+            'translate-y-20',
+            'opacity-0'
+        );
+
+    }, 2500);
+}
+
+
+/* ============================================================
+   CONSOLE
+============================================================ */
+
+function clearConsole() {
+
+    $('console-output').innerHTML =
+        '<div class="console-line text-slate-400">' +
+        '[System] Console cleared.' +
+        '</div>';
+}
+
+
+function consoleMessage(message, type = 'info') {
+
+    const output = $('console-output');
+
+    const line = document.createElement('div');
+
+    line.className = 'console-line';
+
+    if (type === 'error') {
+        line.classList.add('text-rose-400');
+    }
+
+    else if (type === 'success') {
+        line.classList.add('text-emerald-400');
+    }
+
+    else if (type === 'warn') {
+        line.classList.add('text-amber-400');
+    }
+
+    else {
+        line.classList.add('text-cyan-400');
+    }
+
+    line.textContent = message;
+
+    output.appendChild(line);
+
+    output.scrollTop = output.scrollHeight;
+}
+
+
+/* ============================================================
+   STATUS
+============================================================ */
+
+function setStatus(type, text) {
+
+    const dot = $('statusDot');
+
+    dot.classList.remove(
+        'status-online',
+        'status-error',
+        'status-running'
+    );
+
+    if (type === 'error') {
+        dot.classList.add('status-error');
+    }
+
+    else if (type === 'running') {
+        dot.classList.add('status-running');
+    }
+
+    else {
+        dot.classList.add('status-online');
+    }
+
+    $('statusText').textContent = text;
+}
+
+
+/* ============================================================
+   TAB SYSTEM
+============================================================ */
+
+function switchTab(tab) {
+
+    currentTab = tab;
+
+    ['html', 'css', 'js'].forEach(t => {
+
+        const editor = $(`code-${t}`);
+        const button = $(`tab-${t}`);
+
+        editor.classList.add('hidden');
+
+        button.className =
+            'px-3 py-1 rounded text-xs font-medium text-slate-400 hover:text-white';
+
+    });
+
+    $(`code-${tab}`).classList.remove('hidden');
+
+    $(`tab-${tab}`).className =
+        'px-3 py-1 rounded text-xs font-medium bg-slate-800 text-cyan-400 border border-cyan-500/30';
+
+    updateLineNumbers();
+}
+
+
+/* ============================================================
+   LINE NUMBERS
+============================================================ */
+
+function updateLineNumbers() {
+
+    const textarea = $(`code-${currentTab}`);
+
+    if (!textarea) return;
+
+    const count = Math.max(
+        textarea.value.split('\n').length,
+        1
+    );
+
+    let html = '';
+
+    for (let i = 1; i <= count; i++) {
+        html += i + '<br>';
+    }
+
+    $('lineNumbers').innerHTML = html;
+}
+
+
+/* ============================================================
+   VIEWPORT
+============================================================ */
+
+function changeViewport(mode) {
+
+    const wrapper = $('viewport-wrapper');
+
+    ['desktop', 'tablet', 'mobile'].forEach(m => {
+
+        $(`btn-view-${m}`).className =
+            'px-3 py-1.5 rounded-md text-xs font-semibold text-slate-400 hover:text-white transition-all';
+
+    });
+
+    $(`btn-view-${mode}`).className =
+        'px-3 py-1.5 rounded-md text-xs font-semibold bg-cyan-600 text-white transition-all';
+
+
+    if (mode === 'desktop') {
+
+        wrapper.style.width = '100%';
+        wrapper.style.height = '100%';
+        wrapper.style.minHeight = '430px';
+
+    }
+
+    else if (mode === 'tablet') {
+
+        wrapper.style.width = '768px';
+        wrapper.style.maxWidth = '100%';
+        wrapper.style.height = '520px';
+        wrapper.style.minHeight = '520px';
+
+    }
+
+    else if (mode === 'mobile') {
+
+        wrapper.style.width = '375px';
+        wrapper.style.maxWidth = '100%';
+        wrapper.style.height = '667px';
+        wrapper.style.minHeight = '667px';
+
+    }
+
+    showToast(
+        `เปลี่ยน Preview เป็น ${mode.toUpperCase()} แล้ว`
+    );
+}
+
+
+/* ============================================================
+   BUILD HTML
+============================================================ */
+
+function buildHtmlDocument(html, css, js) {
+
+    return `<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+html,body{
+    margin:0;
+    min-height:100%;
+}
+
+${css}
+</style>
+
+<script>
+
+(function(){
+
+    function send(type, msg){
+
+        try{
+
+            parent.postMessage({
+                source: 'WEB_OS_DEV_HUB',
+                type: type,
+                msg: String(msg)
+            }, '*');
+
+        }catch(e){}
+
+    }
+
+
+    window.onerror = function(
+        message,
+        source,
+        lineno,
+        colno,
+        error
+    ){
+
+        send(
+            'error',
+            message + ' (บรรทัด ' + lineno + ')'
+        );
+
+        return false;
+    };
+
+
+    window.addEventListener(
+        'unhandledrejection',
+        function(event){
+
+            send(
+                'error',
+                'Unhandled Promise Rejection: ' +
+                (event.reason || 'Unknown error')
+            );
+
+        }
+    );
+
+
+    const originalLog = console.log;
+
+    console.log = function(){
+
+        const args =
+            Array.from(arguments)
+                .map(x => {
+
+                    try {
+                        return typeof x === 'object'
+                            ? JSON.stringify(x)
+                            : String(x);
+                    }
+
+                    catch(e) {
+                        return String(x);
+                    }
+
+                });
+
+        send(
+            'log',
+            args.join(' ')
+        );
+
+        originalLog.apply(console, arguments);
+    };
+
+
+    const originalWarn = console.warn;
+
+    console.warn = function(){
+
+        const args =
+            Array.from(arguments)
+                .map(String);
+
+        send(
+            'warn',
+            args.join(' ')
+        );
+
+        originalWarn.apply(console, arguments);
+    };
+
+})();
+
+<\/script>
+
+</head>
+
+<body>
+
+${html}
+
+<script>
+try {
+
+${js}
+
+} catch(error) {
+
+    parent.postMessage({
+        source: 'WEB_OS_DEV_HUB',
+        type: 'error',
+        msg: error.message
+    }, '*');
+
+}
+<\/script>
+
+</body>
+</html>`;
+}
+
+
+/* ============================================================
+   EXECUTE HTML
+============================================================ */
+
+function executeCode() {
+
+    const lang = $('languageSelect').value;
+
+    const iframe = $('preview-screen');
+
+    setStatus(
+        'running',
+        'RUNNING'
+    );
+
+    $('console-output').innerHTML = '';
+
+    consoleMessage(
+        '[System] กำลังประมวลผลโค้ด...',
+        'info'
+    );
+
+
+    if (lang !== 'html') {
+
+        runLanguageSimulation(lang);
+
+        return;
+    }
+
+
+    const html = $('code-html').value;
+
+    const css = $('code-css').value;
+
+    const js = $('code-js').value;
+
+
+    try {
+
+        const documentSource =
+            buildHtmlDocument(
+                html,
+                css,
+                js
+            );
+
+        iframe.srcdoc = documentSource;
+
+        setTimeout(() => {
+
+            setStatus(
+                'online',
+                'READY'
+            );
+
+            consoleMessage(
+                '[System] HTML Preview ทำงานสำเร็จ',
+                'success'
+            );
+
+        }, 350);
+
+        showToast(
+            '⚡ รัน HTML/CSS/JavaScript สำเร็จ'
+        );
+
+    }
+
+    catch(error) {
+
+        setStatus(
+            'error',
+            'ERROR'
+        );
+
+        consoleMessage(
+            '[Build Error] ' + error.message,
+            'error'
+        );
+
+    }
+}
+
+
+/* ============================================================
+   OTHER LANGUAGE SIMULATION
+============================================================ */
+
+function runLanguageSimulation(lang) {
+
+    const iframe = $('preview-screen');
+
+    const editor =
+        $(`code-${currentTab}`);
+
+    const code =
+        editor ? editor.value : '';
+
+
+    const languageName = {
+        lua: 'Lua',
+        python: 'Python',
+        php: 'PHP',
+        cpp: 'C++'
+    }[lang] || lang;
+
+
+    const escapedCode =
+        escapeHtml(code);
+
+
+    const simulationHtml = `
+<!DOCTYPE html>
+<html lang="th">
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width,initial-scale=1.0"
+>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    min-height:100vh;
+    background:#020617;
+    color:#e2e8f0;
+    font-family:monospace;
+    padding:25px;
+}
+
+.box{
+    max-width:800px;
+    margin:auto;
+    background:#0f172a;
+    border:1px solid #334155;
+    border-radius:16px;
+    padding:24px;
+    box-shadow:0 20px 50px rgba(0,0,0,.4);
+}
+
+.title{
+    color:#22d3ee;
+    font-size:20px;
+    font-weight:bold;
+    margin-bottom:15px;
+}
+
+.warning{
+    color:#fbbf24;
+    margin:15px 0;
+}
+
+pre{
+    background:#020617;
+    padding:15px;
+    border-radius:10px;
+    overflow:auto;
+    color:#86efac;
+    white-space:pre-wrap;
+}
+
+.ok{
+    color:#4ade80;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="box">
+
+<div class="title">
+<i>WEB OS DEVELOPER HUB</i>
+</div>
+
+<div>
+INTERPRETER MODE:
+<strong>${languageName}</strong>
+</div>
+
+<div class="warning">
+⚠️ โหมดนี้เป็น Simulation
+</div>
+
+<p class="ok">
+✓ โหลดโค้ดเข้าสู่ระบบเรียบร้อย
+</p>
+
+<p class="ok">
+✓ ตรวจโครงสร้างเบื้องต้นเรียบร้อย
+</p>
+
+<p>
+ไม่ได้มี Compiler/Interpreter ของ ${languageName}
+จริงอยู่ภายใน Browser
+</p>
+
+<h3>
+Source Code
+</h3>
+
+<pre>${escapedCode || '// ไม่มีโค้ด'}</pre>
+
+</div>
+
+</body>
+</html>
+`;
+
+
+    iframe.srcdoc = simulationHtml;
+
+
+    setStatus(
+        'online',
+        'SIMULATION'
+    );
+
+
+    consoleMessage(
+        `[Simulation] ${languageName} ไม่ได้ถูก Compile จริงใน Browser`,
+        'warn'
+    );
+
+    consoleMessage(
+        `[Simulation] โหลด Source Code สำเร็จ`,
+        'success'
+    );
+
+
+    showToast(
+        `รัน ${languageName} ในโหมด Simulation แล้ว`
+    );
+}
+
+
+/* ============================================================
+   ESCAPE HTML
+============================================================ */
+
+function escapeHtml(value) {
+
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+
+/* ============================================================
+   MESSAGE FROM IFRAME
+============================================================ */
+
+window.addEventListener(
+    'message',
+    function(event){
+
+        const data = event.data;
+
+        if (
+            !data ||
+            data.source !== 'WEB_OS_DEV_HUB'
+        ) {
+            return;
+        }
+
+
+        if (data.type === 'error') {
+
+            setStatus(
+                'error',
+                'RUNTIME ERROR'
+            );
+
+            consoleMessage(
+                '⚠️ Error: ' + data.msg,
+                'error'
+            );
+
+        }
+
+        else if (data.type === 'log') {
+
+            consoleMessage(
+                '➜ Log: ' + data.msg,
+                'info'
+            );
+
+        }
+
+        else if (data.type === 'warn') {
+
+            consoleMessage(
+                '⚠️ Warning: ' + data.msg,
+                'warn'
+            );
+
+        }
+
+    }
+);
+
+
+/* ============================================================
+   STORAGE
+============================================================ */
+
+function loadProjectsFromStorage() {
+
+    try {
+
+        const cached =
+            localStorage.getItem(
+                STORAGE_KEY
+            );
+
+        if (!cached) {
+
+            projects = {};
+
+            return;
+        }
+
+
+        const parsed =
+            JSON.parse(cached);
+
+
+        if (
+            parsed &&
+            typeof parsed === 'object' &&
+            !Array.isArray(parsed)
+        ) {
+
+            projects = parsed;
+
+        }
+
+        else {
+
+            projects = {};
+
+        }
+
+    }
+
+    catch(error) {
+
+        projects = {};
+
+        consoleMessage(
+            '[Storage] ไม่สามารถอ่านฐานข้อมูลเดิมได้',
+            'warn'
+        );
+
+    }
+}
+
+
+function persistProjects() {
+
+    try {
+
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(projects)
+        );
+
+        return true;
+
+    }
+
+    catch(error) {
+
+        consoleMessage(
+            '[Storage Error] ' + error.message,
+            'error'
+        );
+
+        return false;
+    }
+}
+
+
+/* ============================================================
+   SAVE PROJECT
+============================================================ */
+
+function saveProject() {
+
+    const name =
+        $('projectName')
+            .value
+            .trim();
+
+
+    if (!name) {
+
+        showToast(
+            '⚠️ กรุณาตั้งชื่อโปรเจกต์ก่อน'
+        );
+
+        $('projectName').focus();
+
+        return;
+    }
+
+
+    projects[name] = {
+
+        html: $('code-html').value,
+
+        css: $('code-css').value,
+
+        js: $('code-js').value,
+
+        lang: $('languageSelect').value,
+
+        updatedAt:
+            new Date().toISOString()
+
+    };
+
+
+    if (persistProjects()) {
+
+        updateProjectListUI();
+
+        showToast(
+            `💾 บันทึก "${name}" สำเร็จ`
+        );
+
+    }
+}
+
+
+/* ============================================================
+   PROJECT LIST
+============================================================ */
+
+function updateProjectListUI() {
+
+    const container =
+        $('projectList');
+
+
+    container.innerHTML = '';
+
+
+    const keys =
+        Object.keys(projects);
+
+
+    if (keys.length === 0) {
+
+        container.innerHTML =
+            `<span class="text-xs text-slate-500 p-1 w-full text-center">
+                ไม่มีโปรเจกต์ที่บันทึกไว้
+            </span>`;
+
+        return;
+    }
+
+
+    keys.sort();
+
+
+    keys.forEach(key => {
+
+        const wrapper =
+            document.createElement('div');
+
+        wrapper.className =
+            'flex items-center bg-slate-800 rounded border border-slate-700 overflow-hidden text-xs text-white';
+
+
+        const loadButton =
+            document.createElement('button');
+
+        loadButton.className =
+            'px-2 py-1 hover:bg-slate-700 transition-all font-medium';
+
+        loadButton.innerHTML =
+            `<i class="fa-solid fa-file-code text-cyan-400 mr-1"></i>` +
+            escapeHtml(key);
+
+        loadButton.addEventListener(
+            'click',
+            () => loadSpecificProject(key)
+        );
+
+
+        const deleteButton =
+            document.createElement('button');
+
+        deleteButton.className =
+            'px-1.5 py-1 bg-rose-950 text-rose-400 hover:bg-rose-900 transition-all border-l border-slate-700';
+
+        deleteButton.innerHTML =
+            '<i class="fa-solid fa-xmark"></i>';
+
+        deleteButton.addEventListener(
+            'click',
+            () => deleteProject(key)
+        );
+
+
+        wrapper.appendChild(loadButton);
+
+        wrapper.appendChild(deleteButton);
+
+        container.appendChild(wrapper);
+
+    });
+}
+
+
+/* ============================================================
+   LOAD PROJECT
+============================================================ */
+
+function loadSpecificProject(key) {
+
+    const project =
+        projects[key];
+
+
+    if (!project) {
+
+        showToast(
+            '❌ ไม่พบโปรเจกต์'
+        );
+
+        return;
+    }
+
+
+    $('code-html').value =
+        project.html || '';
+
+    $('code-css').value =
+        project.css || '';
+
+    $('code-js').value =
+        project.js || '';
+
+    $('languageSelect').value =
+        project.lang || 'html';
+
+    $('projectName').value =
+        key;
+
+
+    switchTab('html');
+
+    updateLineNumbers();
+
+    executeCode();
+
+
+    showToast(
+        `📂 โหลด "${key}" สำเร็จ`
+    );
+}
+
+
+/* ============================================================
+   DELETE PROJECT
+============================================================ */
+
+function deleteProject(key) {
+
+    const confirmed =
+        confirm(
+            `ต้องการลบโปรเจกต์ "${key}" หรือไม่?`
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    delete projects[key];
+
+
+    persistProjects();
+
+    updateProjectListUI();
+
+
+    showToast(
+        `🗑️ ลบ "${key}" แล้ว`
+    );
+}
+
+
+/* ============================================================
+   TEMPLATE
+============================================================ */
+
+function loadTemplate() {
+
+    $('languageSelect').value =
+        'html';
+
+
+    $('projectName').value =
+        'Premium UI Template';
+
+
+    $('code-html').value = `
+<div class="app">
+    <div class="card">
+
+        <div class="logo">
+            <i class="fa-solid fa-cubes"></i>
+        </div>
+
+        <h1>Premium UI Template</h1>
+
+        <p>
+            นี่คือหน้าเว็บตัวอย่างจาก
+            Web OS Developer Hub
+        </p>
+
+        <button onclick="triggerAlert()">
+            <i class="fa-solid fa-bolt"></i>
+            ทดสอบ JavaScript
+        </button>
+
+        <div id="result">
+            รอการทดสอบ...
+        </div>
+
+    </div>
+</div>
+`;
+
+
+    $('code-css').value = `
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    min-height:100vh;
+    font-family:Arial,sans-serif;
+    background:
+        linear-gradient(
+            135deg,
+            #0f172a,
+            #312e81,
+            #701a75
+        );
+}
+
+.app{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:30px;
+}
+
+.card{
+    width:min(430px,100%);
+    padding:35px;
+    border-radius:28px;
+    text-align:center;
+    color:white;
+
+    background:
+        rgba(255,255,255,.10);
+
+    border:
+        1px solid rgba(255,255,255,.2);
+
+    backdrop-filter:
+        blur(18px);
+
+    box-shadow:
+        0 25px 80px rgba(0,0,0,.35);
+}
+
+.logo{
+    width:80px;
+    height:80px;
+    margin:0 auto 20px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:22px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #22d3ee,
+            #d946ef
+        );
+
+    font-size:30px;
+
+    animation:
+        spin-slow 10s linear infinite;
+}
+
+h1{
+    margin:0 0 12px;
+}
+
+p{
+    color:#cbd5e1;
+    line-height:1.7;
+}
+
+button{
+    width:100%;
+    border:0;
+    border-radius:999px;
+    padding:13px 20px;
+    margin-top:20px;
+
+    cursor:pointer;
+
+    font-weight:bold;
+
+    color:#111827;
+
+    background:white;
+
+    transition:.2s;
+}
+
+button:hover{
+    transform:translateY(-2px);
+    box-shadow:
+        0 10px 30px rgba(255,255,255,.15);
+}
+
+#result{
+    margin-top:20px;
+    color:#67e8f9;
+}
+
+@keyframes spin-slow{
+
+    from{
+        transform:rotate(0deg);
+    }
+
+    to{
+        transform:rotate(360deg);
+    }
+
+}
+`;
+
+
+    $('code-js').value = `
+function triggerAlert(){
+
+    const result =
+        document.getElementById('result');
+
+    result.textContent =
+        '✓ JavaScript ทำงานสำเร็จ!';
+
+    console.log(
+        'ระบบ JavaScript ทำงานแล้ว'
+    );
+
+}
+`;
+
+
+    switchTab('html');
+
+    executeCode();
+
+    showToast(
+        '✨ โหลด Template สำเร็จ'
+    );
+}
+
+
+/* ============================================================
+   CLEAR WORKSPACE
+============================================================ */
+
+function clearWorkspace() {
+
+    const confirmed =
+        confirm(
+            'ต้องการล้างโค้ดทั้งหมดหรือไม่?'
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    $('code-html').value = '';
+
+    $('code-css').value = '';
+
+    $('code-js').value = '';
+
+
+    executeCode();
+
+    updateLineNumbers();
+
+
+    showToast(
+        '🧹 ล้างพื้นที่ทำงานแล้ว'
+    );
+}
+
+
+/* ============================================================
+   COPY
+============================================================ */
+
+async function copyCombinedCode() {
+
+    const html =
+        $('code-html').value;
+
+    const css =
+        $('code-css').value;
+
+    const js =
+        $('code-js').value;
+
+
+    const combined =
+`<!DOCTYPE html>
+<html lang="th">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width,initial-scale=1.0">
+
+<style>
+${css}
+</style>
+
+</head>
+
+<body>
+
+${html}
+
+<script>
+
+${js}
+
+<\/script>
+
+</body>
+
+</html>`;
+
+
+    try {
+
+        await navigator.clipboard.writeText(
+            combined
+        );
+
+        showToast(
+            '📋 คัดลอกโค้ดทั้งหมดแล้ว'
+        );
+
+    }
+
+    catch(error) {
+
+        fallbackCopy(combined);
+
+    }
+}
+
+
+/* ============================================================
+   FALLBACK COPY
+============================================================ */
+
+function fallbackCopy(text) {
+
+    const textarea =
+        document.createElement('textarea');
+
+    textarea.value = text;
+
+    textarea.style.position =
+        'fixed';
+
+    textarea.style.opacity =
+        '0';
+
+    document.body.appendChild(
+        textarea
+    );
+
+    textarea.select();
+
+    try {
+
+        document.execCommand(
+            'copy'
+        );
+
+        showToast(
+            '📋 คัดลอกโค้ดแล้ว'
+        );
+
+    }
+
+    catch(error) {
+
+        showToast(
+            '❌ ไม่สามารถคัดลอกอัตโนมัติได้'
+        );
+
+    }
+
+    document.body.removeChild(
+        textarea
+    );
+}
+
+
+/* ============================================================
+   DOWNLOAD
+============================================================ */
+
+function downloadCode() {
+
+    const html =
+        $('code-html').value;
+
+    const css =
+        $('code-css').value;
+
+    const js =
+        $('code-js').value;
+
+
+    const combined =
+`<!DOCTYPE html>
+<html lang="th">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width,initial-scale=1.0">
+
+<title>My Web Project</title>
+
+<style>
+
+${css}
+
+</style>
+
+</head>
+
+<body>
+
+${html}
+
+<script>
+
+${js}
+
+<\/script>
+
+</body>
+
+</html>`;
+
+
+    const blob =
+        new Blob(
+            [combined],
+            {
+                type:
+                    'text/html;charset=utf-8'
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+
+    const link =
+        document.createElement('a');
+
+
+    const projectName =
+        $('projectName')
+            .value
+            .trim()
+            .replace(
+                /[<>:"/\\|?*]+/g,
+                '_'
+            );
+
+
+    link.href = url;
+
+    link.download =
+        (projectName || 'index') +
+        '.html';
+
+
+    document.body.appendChild(
+        link
+    );
+
+    link.click();
+
+    document.body.removeChild(
+        link
+    );
+
+
+    setTimeout(
+        () => URL.revokeObjectURL(url),
+        1000
+    );
+
+
+    showToast(
+        '📥 ดาวน์โหลด HTML สำเร็จ'
+    );
+}
+
+
+/* ============================================================
+   KEYBOARD SHORTCUT
+============================================================ */
+
+document.addEventListener(
+    'keydown',
+    function(event){
+
+        if (
+            (event.ctrlKey ||
+             event.metaKey) &&
+            event.key === 'Enter'
+        ){
+
+            event.preventDefault();
+
+            executeCode();
+
+        }
+
+    }
+);
+
+
+/* ============================================================
+   EDITOR INPUT EVENTS
+============================================================ */
+
+['code-html', 'code-css', 'code-js']
+    .forEach(id => {
+
+        $(id).addEventListener(
+            'input',
+            updateLineNumbers
+        );
+
+
+        $(id).addEventListener(
+            'scroll',
+            function(){
+
+                const active =
+                    $(`code-${currentTab}`);
+
+                if (
+                    active &&
+                    active === this
+                ){
+
+                    $('lineNumbers').scrollTop =
+                        this.scrollTop;
+
+                }
+
+            }
+        );
+
+    });
+
+
+/* ============================================================
+   LANGUAGE CHANGE
+============================================================ */
+
+$('languageSelect')
+    .addEventListener(
+        'change',
+        function(){
+
+            const lang =
+                this.value;
+
+            if (lang === 'html') {
+
+                showToast(
+                    'HTML Mode พร้อมใช้งานจริง'
+                );
+
+            }
+
+            else {
+
+                showToast(
+                    `${lang.toUpperCase()} ใช้ Simulation Mode`
+                );
+
+            }
+
+        }
+    );
+
+
+/* ============================================================
+   INITIAL BOOT
+============================================================ */
+
+window.addEventListener(
+    'load',
+    function(){
+
+        loadProjectsFromStorage();
+
+        updateProjectListUI();
+
+        updateLineNumbers();
+
+
+        /*
+         * ใส่หน้าเริ่มต้นเล็ก ๆ
+         * เพื่อไม่ให้ Preview ขาวเปล่า
+         */
+
+        $('code-html').value = `
+<div style="
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:Arial,sans-serif;
+    background:#020617;
+    color:white;
+    text-align:center;
+    padding:30px;
+">
+
+    <div>
+
+        <div style="
+            font-size:48px;
+            margin-bottom:15px;
+        ">
+            ⚡
+        </div>
+
+        <h1>
+            Web OS Developer Hub
+        </h1>
+
+        <p style="
+            color:#94a3b8;
+        ">
+            กด Template หรือเขียน HTML
+            แล้วกด รันระบบ
+        </p>
+
+    </div>
+
+</div>
+`;
+
+        $('code-css').value = '';
+
+        $('code-js').value = `
+console.log(
+    'Web OS Developer Hub พร้อมทำงาน'
+);
+`;
+
+
+        executeCode();
+
+    }
+);
+
+</script>
+
+</body>
+</html>
