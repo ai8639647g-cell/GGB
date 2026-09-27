@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Code Shield V7 - Pure Stability</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background:
+                radial-gradient(circle at top left, rgba(79,70,229,.12), transparent 35%),
+                radial-gradient(circle at bottom right, rgba(168,85,247,.10), transparent 35%),
+                #030712;
+        }
+
+        .neon-border-indigo {
+            box-shadow:
+                0 0 20px rgba(99,102,241,.20),
+                inset 0 0 20px rgba(99,102,241,.03);
+        }
+
+        .cyber-panel {
+            background: rgba(15,23,42,.95);
+            backdrop-filter: blur(12px);
+        }
+
+        .status-pulse {
+            animation: statusPulse 2s cubic-bezier(.4,0,.6,1) infinite;
+        }
+
+        @keyframes statusPulse {
+            0%,100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: .45;
+                transform: scale(.85);
+            }
+        }
+
+        textarea,
+        input,
+        select {
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        iframe {
+            display: block;
+            width: 100%;
+            height: 100%;
+            border: 0;
+            background: white;
+        }
+
+        .code-scroll {
+            scrollbar-width: thin;
+            scrollbar-color: #334155 #050814;
+        }
+
+        .code-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .code-scroll::-webkit-scrollbar-track {
+            background: #050814;
+        }
+
+        .code-scroll::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 999px;
+        }
+
+        .code-scroll::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+
+<body class="text-slate-100 min-h-screen flex flex-col font-sans">
+
+    <!-- ================= HEADER ================= -->
+    <header class="border-b border-indigo-950/50 bg-[#090d1f] sticky top-0 z-50 shadow-2xl">
+
+        <div class="max-w-7xl mx-auto px-4 py-3.5 flex items-center justify-between gap-4">
+
+            <div class="flex items-center space-x-3 min-w-0">
+
+                <div class="bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 p-2.5 rounded-xl text-white shadow-xl shrink-0">
+                    <i class="fa-solid fa-shield-halved text-2xl"></i>
+                </div>
+
+                <div class="min-w-0">
+
+                    <div class="flex items-center space-x-2 flex-wrap">
+
+                        <h1 class="text-xl sm:text-2xl font-black tracking-wider bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                            CODE SHIELD V7
+                        </h1>
+
+                        <span class="text-[10px] bg-emerald-950 border border-emerald-700 text-emerald-400 px-2 py-0.5 rounded font-mono font-bold">
+                            STABLE FIX
+                        </span>
+
+                    </div>
+
+                    <p class="text-[10px] sm:text-xs text-slate-400 font-mono truncate">
+                        Pure Stability • Zero White-Screen Bug
+                    </p>
+
+                </div>
+            </div>
+
+            <div class="hidden sm:flex items-center space-x-3 bg-slate-900 border border-slate-800 px-4 py-2 rounded-xl shrink-0">
+
+                <span class="h-2 w-2 rounded-full bg-emerald-400 inline-block status-pulse"></span>
+
+                <span class="text-xs text-slate-300 font-mono">
+                    PREVIEW ENGINE:
+                    <span class="text-emerald-400 font-bold">
+                        FIXED & READY
+                    </span>
+                </span>
+
+            </div>
+
+        </div>
+    </header>
+
+
+    <!-- ================= MAIN ================= -->
+    <main class="max-w-7xl mx-auto px-4 py-6 w-full flex-grow">
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+
+            <!-- ================= LEFT ================= -->
+            <div class="lg:col-span-5 flex flex-col gap-5">
+
+
+                <!-- INPUT CODE -->
+                <div class="cyber-panel border border-slate-800 rounded-2xl p-5 shadow-2xl flex flex-col h-[300px] neon-border-indigo">
+
+                    <div class="flex items-center justify-between mb-2.5">
+
+                        <div class="flex items-center space-x-2">
+
+                            <i class="fa-solid fa-code text-indigo-400"></i>
+
+                            <h2 class="text-sm font-bold text-slate-300">
+                                1. วางโค้ดเว็บ/แอปที่ต้องการแปลง
+                            </h2>
+
+                        </div>
+
+                        <span class="text-[9px] text-slate-600 font-mono">
+                            INPUT
+                        </span>
+
+                    </div>
+
+                    <textarea
+                        id="rawCodeInput"
+                        spellcheck="false"
+                        placeholder="<!-- วาง HTML, CSS, JS ของคุณที่นี่ -->"
+                        class="code-scroll w-full flex-grow bg-[#050814] border border-slate-800 rounded-xl p-3 font-mono text-xs text-indigo-300 placeholder-slate-700 focus:ring-1 focus:ring-indigo-500 focus:outline-none resize-none transition-all"
+                    ></textarea>
+
+                </div>
+
+
+                <!-- SETTINGS -->
+                <div class="cyber-panel border border-slate-800 rounded-2xl p-5 shadow-2xl flex flex-col gap-3.5">
+
+                    <h2 class="text-sm font-bold text-slate-300 flex items-center space-x-2">
+                        <i class="fa-solid fa-sliders text-purple-400"></i>
+                        <span>2. ตั้งค่าการป้องกัน</span>
+                    </h2>
+
+
+                    <!-- LEVEL -->
+                    <div class="bg-[#050814] border border-slate-800 p-2.5 rounded-xl">
+
+                        <label class="block text-[11px] text-slate-400 font-bold mb-1">
+                            เลือกระดับการแปลง:
+                        </label>
+
+                        <select
+                            id="shieldLevel"
+                            class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg p-2 focus:outline-none focus:ring-1 focus:ring-indigo-500 text-indigo-300 cursor-pointer"
+                        >
+
+                            <option value="1">
+                                Level 1: พื้นฐาน
+                            </option>
+
+                            <option value="2">
+                                Level 2: ทั่วไป
+                            </option>
+
+                            <option value="3">
+                                Level 3: ปานกลาง
+                            </option>
+
+                            <option value="4">
+                                Level 4: ขั้นสูง
+                            </option>
+
+                            <option value="5">
+                                Level 5: Advanced
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- PASSWORD -->
+                    <div class="bg-[#050814] border border-slate-800 p-2.5 rounded-xl">
+
+                        <label class="block text-[11px] text-slate-400 font-bold mb-1">
+
+                            <i class="fa-solid fa-lock text-amber-400"></i>
+
+                            รหัสผ่าน
+                        </label>
+
+                        <input
+                            type="password"
+                            id="codePassword"
+                            autocomplete="off"
+                            placeholder="ใส่รหัสผ่านถ้าต้องการล็อก"
+                            class="w-full bg-slate-900 border border-slate-700 text-xs rounded-lg p-2 text-amber-300 focus:outline-none focus:ring-1 focus:ring-amber-500 font-mono"
+                        >
+
+                    </div>
+
+
+                    <!-- BUTTONS -->
+                    <div class="grid grid-cols-2 gap-3">
+
+                        <button
+                            type="button"
+                            onclick="encryptProcess()"
+                            class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all flex flex-col items-center justify-center gap-1 active:scale-95 cursor-pointer"
+                        >
+
+                            <i class="fa-solid fa-shield-cat text-lg"></i>
+
+                            <span class="text-xs">
+                                1. แปลงเป็นตัวเลข
+                            </span>
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            onclick="decryptProcess()"
+                            class="bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-all flex flex-col items-center justify-center gap-1 active:scale-95 cursor-pointer"
+                        >
+
+                            <i class="fa-solid fa-circle-play text-lg"></i>
+
+                            <span class="text-xs">
+                                2. รัน Preview
+                            </span>
+
+                        </button>
+
+                    </div>
+
+
+                    <!-- RESET -->
+                    <button
+                        type="button"
+                        onclick="resetAllEngines()"
+                        class="w-full bg-slate-800 hover:bg-rose-950/40 hover:text-rose-400 border border-slate-700/60 text-slate-400 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center justify-center space-x-2 cursor-pointer"
+                    >
+
+                        <i class="fa-solid fa-rotate-left"></i>
+
+                        <span>
+                            เคลียร์ทั้งหมด
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ================= RIGHT ================= -->
+            <div class="lg:col-span-7 flex flex-col gap-5">
+
+
+                <!-- NUMBER BOX -->
+                <div class="cyber-panel border border-slate-800 rounded-2xl p-5 shadow-2xl flex flex-col h-[260px]">
+
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2.5">
+
+                        <div class="flex items-center space-x-2">
+
+                            <i class="fa-solid fa-calculator text-cyan-400"></i>
+
+                            <h2 class="text-sm font-bold text-slate-300">
+                                3. กล่องรหัสตัวเลข
+                            </h2>
+
+                        </div>
+
+
+                        <div class="flex items-center flex-wrap gap-1.5">
+
+                            <label
+                                class="text-[11px] bg-slate-800 border border-slate-700 text-slate-300 px-2.5 py-1.5 rounded-lg hover:bg-slate-700 cursor-pointer transition-all"
+                            >
+
+                                <i class="fa-solid fa-file-arrow-up"></i>
+
+                                โหลดไฟล์
+
+                                <input
+                                    type="file"
+                                    id="txtImporter"
+                                    accept=".txt,text/plain"
+                                    class="hidden"
+                                    onchange="loadTextFile(this)"
+                                >
+
+                            </label>
+
+
+                            <button
+                                type="button"
+                                onclick="saveAsTextFile()"
+                                class="text-[11px] bg-purple-950/70 border border-purple-800 text-purple-300 px-2.5 py-1.5 rounded-lg hover:bg-purple-600 hover:text-white transition-all cursor-pointer"
+                            >
+
+                                <i class="fa-solid fa-floppy-disk"></i>
+
+                                ดาวน์โหลด
+
+                            </button>
+
+
+                            <button
+                                type="button"
+                                onclick="copyToClipboard()"
+                                class="text-[11px] bg-slate-800 border border-slate-700 text-cyan-400 px-2.5 py-1.5 rounded-lg hover:bg-cyan-500 hover:text-slate-950 transition-all cursor-pointer"
+                            >
+
+                                <i class="fa-regular fa-copy"></i>
+
+                                <span id="btnCopyText">
+                                    คัดลอก
+                                </span>
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <textarea
+                        id="outputNumberArea"
+                        spellcheck="false"
+                        placeholder="ชุดตัวเลขที่สร้างจะแสดงตรงนี้... สามารถวางชุดตัวเลขจากไฟล์อื่นเพื่อทดสอบได้"
+                        class="code-scroll w-full flex-grow bg-[#050814] border border-slate-800 rounded-xl p-3 font-mono text-xs text-cyan-400 placeholder-slate-700 focus:outline-none focus:ring-1 focus:ring-cyan-500 resize-none break-all"
+                    ></textarea>
+
+                </div>
+
+
+
+                <!-- LIVE RENDERER -->
+                <div class="cyber-panel border border-slate-800 rounded-2xl p-5 shadow-2xl flex flex-col min-h-[440px]">
+
+                    <div class="flex items-center justify-between mb-3 gap-2">
+
+                        <div class="flex items-center space-x-2">
+
+                            <i class="fa-solid fa-display text-emerald-400"></i>
+
+                            <h2 class="text-sm font-bold text-slate-300">
+                                4. Live Renderer
+                            </h2>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            onclick="launchAbsoluteFullscreen()"
+                            class="text-[11px] bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg transition-all cursor-pointer"
+                        >
+
+                            <i class="fa-solid fa-up-right-and-down-left-from-center"></i>
+
+                            เปิดเต็มจอ
+
+                        </button>
+
+                    </div>
+
+
+                    <!-- STATUS -->
+                    <div
+                        id="diagnoseStatus"
+                        class="mb-3 bg-[#050814] border border-slate-800 rounded-lg px-3 py-2 text-xs font-mono text-slate-500"
+                    >
+
+                        สถานะเลข:
+                        <span class="text-slate-500">
+                            รอการทดสอบ
+                        </span>
+
+                    </div>
+
+
+                    <!-- IFRAME -->
+                    <div class="flex-1 min-h-[260px] bg-white rounded-xl overflow-hidden border border-slate-700 shadow-inner">
+
+                        <iframe
+                            id="liveRenderFrame"
+                            title="Code Shield Live Preview"
+                            sandbox="allow-scripts allow-forms allow-modals allow-popups"
+                        ></iframe>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- FALLBACK CODE VIEWER -->
+                <div class="cyber-panel border border-slate-800 rounded-2xl p-5 shadow-2xl">
+
+                    <div class="flex items-center justify-between mb-3">
+
+                        <div class="flex items-center space-x-2">
+
+                            <i class="fa-solid fa-file-code text-amber-400"></i>
+
+                            <h2 class="text-sm font-bold text-slate-300">
+                                Code Viewer Mirror
+                            </h2>
+
+                        </div>
+
+                        <span class="text-[9px] text-slate-600 font-mono">
+                            FALLBACK
+                        </span>
+
+                    </div>
+
+
+                    <p class="text-[11px] text-slate-500 mb-2">
+                        หาก Preview ด้านบนมีปัญหา โค้ดที่ถอดกลับมาได้จะแสดงตรงนี้
+                    </p>
+
+
+                    <pre
+                        id="fallbackCodeBox"
+                        class="code-scroll bg-[#050814] border border-slate-800 rounded-xl p-4 min-h-[180px] max-h-[420px] overflow-auto whitespace-pre-wrap break-words text-xs text-slate-300 font-mono"
+                    >ระบบกำลังรอการถอดรหัสเพื่อแสดงโค้ดตรงนี้...</pre>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="border-t border-slate-900 bg-[#050814] py-4 mt-5">
+
+        <div class="max-w-7xl mx-auto px-4 text-center">
+
+            <p class="text-[10px] text-slate-600 font-mono">
+                © 2026 CODE SHIELD V7 ENGINE
+                • PURE STABILITY EDITION
+            </p>
+
+        </div>
+
+    </footer>
+
+
+
+<script>
+"use strict";
+
+/* =========================================================
+   CODE SHIELD V7
+   Stable Number Encoder / Decoder
+   ========================================================= */
+
+let globalDecodedHTML = "";
+
+
+/* =========================================================
+   LEVEL CONFIG
+   ========================================================= */
+
+function getLevelConfig(level) {
+
+    const configs = {
+        "1": {
+            mult: 2,
+            shift: 4
+        },
+
+        "2": {
+            mult: 2,
+            shift: 12
+        },
+
+        "3": {
+            mult: 3,
+            shift: 12
+        },
+
+        "4": {
+            mult: 4,
+            shift: 40
+        },
+
+        "5": {
+            mult: 6,
+            shift: 88
+        }
+    };
+
+    return configs[String(level)] || configs["1"];
+}
+
+
+/* =========================================================
+   PASSWORD HASH
+   ========================================================= */
+
+function calculatePasswordHash(password) {
+
+    let hash = 0;
+
+    for (let i = 0; i < password.length; i++) {
+        hash += password.charCodeAt(i);
+    }
+
+    return hash;
+}
+
+
+/* =========================================================
+   ENCRYPT
+   ========================================================= */
+
+function encryptProcess() {
+
+    const rawCode =
+        document.getElementById("rawCodeInput").value;
+
+    const level =
+        document.getElementById("shieldLevel").value;
+
+    const password =
+        document.getElementById("codePassword").value.trim();
+
+    const outputArea =
+        document.getElementById("outputNumberArea");
+
+
+    if (!rawCode.trim()) {
+
+        alert(
+            "โปรดวางโค้ด HTML / CSS / JavaScript ในช่องที่ 1 ก่อนครับ"
+        );
+
+        return;
+    }
+
+
+    const config = getLevelConfig(level);
+
+    const passwordHash =
+        calculatePasswordHash(password);
+
+
+    const encryptedArr = [];
+
+
+    /*
+        Header
+
+        V7-LEVEL
+        PASSWORD_HASH
+        DATA...
+    */
+
+    encryptedArr.push(`V7-${level}`);
+
+    encryptedArr.push(passwordHash);
+
+
+    /*
+        Encode UTF-16 code units.
+
+        ข้อดี:
+        - รองรับภาษาไทย
+        - รองรับ Unicode BMP
+        - encode/decode กลับได้ตรงกัน
+        - ไม่ใช้ random
+    */
+
+    for (let i = 0; i < rawCode.length; i++) {
+
+        const charCode =
+            rawCode.charCodeAt(i);
+
+        const finalNum =
+            (charCode * config.mult) + config.shift;
+
+        encryptedArr.push(finalNum);
+    }
+
+
+    outputArea.value =
+        encryptedArr.join("-");
+
+
+    globalDecodedHTML = "";
+
+
+    updateStatus(
+        "แปลงรหัสสำเร็จ",
+        "text-emerald-400 font-bold"
+    );
+}
+
+
+/* =========================================================
+   DECRYPT
+   ========================================================= */
+
+function decryptProcess() {
+
+    let numString =
+        document.getElementById("outputNumberArea").value.trim();
+
+    const iframe =
+        document.getElementById("liveRenderFrame");
+
+    const passwordInput =
+        document.getElementById("codePassword").value.trim();
+
+    const fallbackBox =
+        document.getElementById("fallbackCodeBox");
+
+
+    if (!numString) {
+
+        alert(
+            "โปรดนำชุดตัวเลขมาวางในกล่องรหัสตัวเลขก่อนครับ"
+        );
+
+        return;
+    }
+
+
+    /*
+        รองรับกรณีผู้ใช้ copy แล้วมี whitespace / newline
+    */
+
+    numString =
+        numString.replace(/\s+/g, "");
+
+
+    const segments =
+        numString.split("-");
+
+
+    if (segments.length < 3) {
+
+        updateStatus(
+            "โครงสร้างข้อมูลไม่ครบ",
+            "text-rose-400 font-bold"
+        );
+
+        fallbackBox.textContent =
+            "ไม่สามารถถอดรหัสได้: ข้อมูลต้องมี Header, Password Hash และข้อมูลตัวเลข";
+
+        return;
+    }
+
+
+    /* =====================================================
+       HEADER CHECK
+       ===================================================== */
+
+    if (!segments[0].startsWith("V7-")) {
+
+        updateStatus(
+            "ไม่ใช่รูปแบบ V7",
+            "text-rose-400 font-bold"
+        );
+
+        fallbackBox.textContent =
+            "ข้อมูลชุดนี้ไม่มี Header V7 ที่ถูกต้อง";
+
+        return;
+    }
+
+
+    const level =
+        segments[0].split("-")[1];
+
+
+    if (!["1", "2", "3", "4", "5"].includes(level)) {
+
+        updateStatus(
+            "Level ไม่ถูกต้อง",
+            "text-rose-400 font-bold"
+        );
+
+        fallbackBox.textContent =
+            "ไม่พบระดับการเข้ารหัสที่รองรับ";
+
+        return;
+    }
+
+
+    const config =
+        getLevelConfig(level);
+
+
+    /* =====================================================
+       PASSWORD CHECK
+       ===================================================== */
+
+    const savedHash =
+        Number(segments[1]);
+
+
+    const currentInputHash =
+        calculatePasswordHash(passwordInput);
+
+
+    if (
+        !Number.isInteger(savedHash) ||
+        savedHash < 0
+    ) {
+
+        updateStatus(
+            "Password metadata เสียหาย",
+            "text-rose-400 font-bold"
+        );
+
+        fallbackBox.textContent =
+            "ค่า Password Hash ในชุดตัวเลขไม่ถูกต้อง";
+
+        return;
+    }
+
+
+    if (savedHash !== currentInputHash) {
+
+        updateStatus(
+            "รหัสผ่านไม่ถูกต้อง",
+            "text-rose-400 font-bold"
+        );
+
+        fallbackBox.textContent =
+            "❌ รหัสผ่านไม่ถูกต้อง\n\n" +
+            "กรุณาใส่รหัสผ่านให้ตรงกับตอนที่สร้างชุดตัวเลข";
+
+        return;
+    }
+
+
+    /* =====================================================
+       DECODE
+       ===================================================== */
+
+    try {
+
+        let decodedHTML = "";
+
+
+        for (
+            let i = 2;
+            i < segments.length;
+            i++
+        ) {
+
+            const part =
+                segments[i];
+
+
+            if (
+                part === "" ||
+                !/^\d+$/.test(part)
+            ) {
+                continue;
+            }
+
+
+            const rawNum =
+                Number(part);
+
+
+            const charVal =
+                (rawNum - config.shift) /
+                config.mult;
+
+
+            if (
+                !Number.isFinite(charVal) ||
+                charVal < 0 ||
+                charVal > 65535
+            ) {
+
+                throw new Error(
+                    "Invalid character value"
+                );
+            }
+
+
+            decodedHTML +=
+                String.fromCharCode(
+                    Math.round(charVal)
+                );
+        }
+
+
+        if (!decodedHTML) {
+
+            throw new Error(
+                "Decoded data is empty"
+            );
+        }
+
+
+        /* =================================================
+           SAVE GLOBAL
+           ================================================= */
+
+        globalDecodedHTML =
+            decodedHTML;
+
+
+        /* =================================================
+           FALLBACK VIEWER
+           ================================================= */
+
+        fallbackBox.textContent =
+            decodedHTML;
+
+
+        /* =================================================
+           LIVE IFRAME
+           ================================================= */
+
+        const iframeDoc =
+            iframe.contentDocument ||
+            iframe.contentWindow.document;
+
+
+        iframeDoc.open();
+
+        iframeDoc.write(decodedHTML);
+
+        iframeDoc.close();
+
+
+        updateStatus(
+            "ถอดรหัสสำเร็จ • Preview พร้อมใช้งาน",
+            "text-cyan-400 font-bold"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Decode error:",
+            error
+        );
+
+
+        globalDecodedHTML = "";
+
+
+        updateStatus(
+            "ชุดตัวเลขเสียหายหรือไม่ถูกต้อง",
+            "text-rose-400 font-bold"
+        );
+
+
+        fallbackBox.textContent =
+            "เกิดข้อผิดพลาดในการถอดรหัส\n\n" +
+            "ตรวจสอบว่าชุดตัวเลขถูกคัดลอกมาครบหรือไม่";
+    }
+}
+
+
+/* =========================================================
+   FULLSCREEN / NEW TAB
+   ========================================================= */
+
+function launchAbsoluteFullscreen() {
+
+    const currentNum =
+        document.getElementById(
+            "outputNumberArea"
+        ).value.trim();
+
+
+    /*
+        ถ้ามีข้อมูลตัวเลขอยู่
+        ให้ถอดรหัสใหม่ก่อน
+    */
+
+    if (currentNum) {
+
+        decryptProcess();
+    }
+
+
+    if (!globalDecodedHTML) {
+
+        alert(
+            "ไม่พบโค้ดสำหรับเปิดเต็มจอ\n\n" +
+            "โปรดวางชุดตัวเลขแล้วกด Preview ก่อนครับ"
+        );
+
+        return;
+    }
+
+
+    try {
+
+        const blob =
+            new Blob(
+                [globalDecodedHTML],
+                {
+                    type: "text/html;charset=utf-8"
+                }
+            );
+
+
+        const blobUrl =
+            URL.createObjectURL(blob);
+
+
+        const newWindow =
+            window.open(
+                blobUrl,
+                "_blank"
+            );
+
+
+        if (
+            !newWindow ||
+            newWindow.closed
+        ) {
+
+            alert(
+                "เบราว์เซอร์บล็อก Popup\n\n" +
+                "คุณยังสามารถดูหน้าเว็บได้จาก Preview ด้านบน"
+            );
+
+            return;
+        }
+
+
+        /*
+            ปล่อย URL ไว้สักพักเพื่อให้แท็บใหม่โหลดเสร็จ
+        */
+
+        setTimeout(() => {
+
+            URL.revokeObjectURL(blobUrl);
+
+        }, 60000);
+
+
+    } catch (error) {
+
+        console.error(
+            "Fullscreen error:",
+            error
+        );
+
+        alert(
+            "ไม่สามารถเปิดหน้าเว็บเต็มจอได้"
+        );
+    }
+}
+
+
+/* =========================================================
+   STATUS
+   ========================================================= */
+
+function updateStatus(
+    text,
+    cssClass
+) {
+
+    const status =
+        document.getElementById(
+            "diagnoseStatus"
+        );
+
+
+    status.innerHTML =
+        `สถานะเลข:
+        <span class="${cssClass}">
+            ${escapeHTML(text)}
+        </span>`;
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+   ========================================================= */
+
+function escapeHTML(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+/* =========================================================
+   LOAD TXT
+   ========================================================= */
+
+function loadTextFile(input) {
+
+    const file =
+        input.files &&
+        input.files[0];
+
+
+    if (!file) {
+        return;
+    }
+
+
+    const reader =
+        new FileReader();
+
+
+    reader.onload =
+        function(event) {
+
+            const content =
+                String(
+                    event.target.result || ""
+                );
+
+
+            document.getElementById(
+                "outputNumberArea"
+            ).value = content;
+
+
+            updateStatus(
+                "โหลดไฟล์เรียบร้อย",
+                "text-amber-400 font-bold"
+            );
+
+
+            /*
+                Auto preview
+            */
+
+            decryptProcess();
+        };
+
+
+    reader.onerror =
+        function() {
+
+            updateStatus(
+                "อ่านไฟล์ไม่สำเร็จ",
+                "text-rose-400 font-bold"
+            );
+
+        };
+
+
+    reader.readAsText(file, "UTF-8");
+
+
+    /*
+        reset input เพื่อให้เลือกไฟล์เดิมซ้ำได้
+    */
+
+    input.value = "";
+}
+
+
+/* =========================================================
+   SAVE TXT
+   ========================================================= */
+
+function saveAsTextFile() {
+
+    const content =
+        document.getElementById(
+            "outputNumberArea"
+        ).value.trim();
+
+
+    if (!content) {
+
+        alert(
+            "ยังไม่มีชุดตัวเลขสำหรับบันทึก"
+        );
+
+        return;
+    }
+
+
+    const blob =
+        new Blob(
+            [content],
+            {
+                type: "text/plain;charset=utf-8"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(blob);
+
+
+    const a =
+        document.createElement("a");
+
+
+    a.href = url;
+
+    a.download =
+        "stable-shielded-code.txt";
+
+
+    document.body.appendChild(a);
+
+    a.click();
+
+    a.remove();
+
+
+    setTimeout(() => {
+
+        URL.revokeObjectURL(url);
+
+    }, 1000);
+}
+
+
+/* =========================================================
+   COPY
+   ========================================================= */
+
+async function copyToClipboard() {
+
+    const output =
+        document.getElementById(
+            "outputNumberArea"
+        );
+
+
+    const value =
+        output.value;
+
+
+    if (!value.trim()) {
+
+        alert(
+            "ยังไม่มีข้อมูลให้คัดลอก"
+        );
+
+        return;
+    }
+
+
+    const buttonText =
+        document.getElementById(
+            "btnCopyText"
+        );
+
+
+    try {
+
+        /*
+            Modern clipboard API
+        */
+
+        await navigator.clipboard.writeText(
+            value
+        );
+
+
+        buttonText.textContent =
+            "คัดลอกแล้ว!";
+
+
+        setTimeout(() => {
+
+            buttonText.textContent =
+                "คัดลอก";
+
+        }, 2000);
+
+
+    } catch (error) {
+
+        /*
+            Fallback สำหรับ browser เก่า
+        */
+
+        output.focus();
+
+        output.select();
+
+        document.execCommand(
+            "copy"
+        );
+
+
+        buttonText.textContent =
+            "คัดลอกแล้ว!";
+
+
+        setTimeout(() => {
+
+            buttonText.textContent =
+                "คัดลอก";
+
+        }, 2000);
+    }
+}
+
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
+function resetAllEngines() {
+
+    document.getElementById(
+        "rawCodeInput"
+    ).value = "";
+
+
+    document.getElementById(
+        "outputNumberArea"
+    ).value = "";
+
+
+    document.getElementById(
+        "codePassword"
+    ).value = "";
+
+
+    document.getElementById(
+        "shieldLevel"
+    ).value = "1";
+
+
+    globalDecodedHTML = "";
+
+
+    /*
+        Clear iframe
+    */
+
+    const iframe =
+        document.getElementById(
+            "liveRenderFrame"
+        );
+
+
+    try {
+
+        const iframeDoc =
+            iframe.contentDocument ||
+            iframe.contentWindow.document;
+
+
+        iframeDoc.open();
+
+        iframeDoc.write("");
+
+        iframeDoc.close();
+
+    } catch (error) {
+
+        console.warn(
+            "Could not clear iframe:",
+            error
+        );
+    }
+
+
+    /*
+        Clear fallback
+    */
+
+    document.getElementById(
+        "fallbackCodeBox"
+    ).textContent =
+        "ระบบกำลังรอการถอดรหัสเพื่อแสดงโค้ดตรงนี้...";
+
+
+    updateStatus(
+        "รอการทดสอบ",
+        "text-slate-500"
+    );
+}
+
+
+/* =========================================================
+   KEYBOARD SHORTCUTS
+   ========================================================= */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        /*
+            Ctrl + Enter
+            = Encrypt
+        */
+
+        if (
+            event.ctrlKey &&
+            event.key === "Enter"
+        ) {
+
+            event.preventDefault();
+
+            encryptProcess();
+        }
+
+
+        /*
+            Ctrl + Shift + Enter
+            = Preview
+        */
+
+        if (
+            event.ctrlKey &&
+            event.shiftKey &&
+            event.key === "Enter"
+        ) {
+
+            event.preventDefault();
+
+            decryptProcess();
+        }
+
+    }
+);
+
+
+/* =========================================================
+   INITIALIZATION
+   ========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        updateStatus(
+            "รอการทดสอบ",
+            "text-slate-500"
+        );
+
+    }
+);
+
+</script>
+
+</body>
+</html>
