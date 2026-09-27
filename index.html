@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Lua Custom VM Obfuscator</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Orbitron:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background:
+                radial-gradient(
+                    circle at top right,
+                    #0b0f19 0%,
+                    #05070c 100%
+                );
+
+            color: #e2e8f0;
+
+            font-family: "Plus Jakarta Sans", sans-serif;
+
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 30px 20px;
+        }
+
+        .wrapper {
+            width: 100%;
+            max-width: 900px;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(17, 24, 39, 0.94) 0%,
+                    rgba(10, 15, 26, 0.97) 100%
+                );
+
+            border-radius: 24px;
+
+            padding: 40px;
+
+            box-shadow:
+                0 25px 50px -12px rgba(0, 0, 0, 0.7),
+                0 0 40px rgba(6, 182, 212, 0.1);
+
+            border: 1px solid rgba(6, 182, 212, 0.15);
+
+            backdrop-filter: blur(12px);
+
+            position: relative;
+            overflow: hidden;
+        }
+
+        .wrapper::before {
+            content: "";
+
+            position: absolute;
+
+            top: 0;
+            left: 25%;
+
+            width: 50%;
+            height: 2px;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    #06b6d4,
+                    #3b82f6,
+                    transparent
+                );
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .header h1 {
+            font-family: "Orbitron", sans-serif;
+
+            font-size: 28px;
+            font-weight: 700;
+
+            letter-spacing: 2px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #06b6d4 0%,
+                    #3b82f6 100%
+                );
+
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .label {
+            font-size: 13px;
+            font-weight: 600;
+
+            text-transform: uppercase;
+            letter-spacing: 1px;
+
+            color: #06b6d4;
+
+            margin-bottom: 10px;
+
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+
+            background-color: rgba(3, 7, 18, 0.6);
+
+            color: #a5f3fc;
+
+            border: 1px solid rgba(255, 255, 255, 0.08);
+
+            border-radius: 14px;
+
+            padding: 18px;
+
+            font-family: "Fira Code", monospace;
+            font-size: 13px;
+            line-height: 1.6;
+
+            resize: vertical;
+
+            outline: none;
+
+            transition: all 0.3s ease;
+
+            box-shadow:
+                inset 0 2px 4px rgba(0, 0, 0, 0.4);
+        }
+
+        textarea:focus {
+            border-color: #06b6d4;
+
+            box-shadow:
+                inset 0 2px 4px rgba(0, 0, 0, 0.4),
+                0 0 15px rgba(6, 182, 212, 0.15);
+        }
+
+        .btn-container {
+            margin: 25px 0;
+        }
+
+        .btn-glow {
+            width: 100%;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #06b6d4 0%,
+                    #2563eb 100%
+                );
+
+            color: #ffffff;
+
+            border: none;
+
+            padding: 16px;
+
+            font-size: 15px;
+            font-weight: 700;
+
+            font-family: "Orbitron", sans-serif;
+
+            letter-spacing: 1px;
+
+            border-radius: 14px;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 4px 20px rgba(6, 182, 212, 0.3);
+
+            transition: all 0.3s ease;
+        }
+
+        .btn-glow:hover {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 6px 25px rgba(6, 182, 212, 0.5);
+
+            filter: brightness(1.1);
+        }
+
+        .btn-glow:active {
+            transform: translateY(1px);
+        }
+
+        .output-box {
+            position: relative;
+        }
+
+        .control-panel {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .btn-secondary {
+            flex: 1;
+
+            background: rgba(255, 255, 255, 0.03);
+
+            border: 1px solid rgba(255, 255, 255, 0.08);
+
+            color: #cbd5e1;
+
+            padding: 14px;
+
+            border-radius: 12px;
+
+            font-size: 14px;
+            font-weight: 600;
+
+            cursor: pointer;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 8px;
+
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
+
+            color: #ffffff;
+
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-copy-success {
+            background:
+                linear-gradient(
+                    135deg,
+                    #059669 0%,
+                    #10b981 100%
+                ) !important;
+
+            border: none !important;
+
+            color: white !important;
+
+            box-shadow:
+                0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        textarea::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        textarea::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        textarea::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        textarea::-webkit-scrollbar-thumb:hover {
+            background: rgba(6, 182, 212, 0.3);
+        }
+
+        @media (max-width: 650px) {
+            body {
+                padding: 15px;
+            }
+
+            .wrapper {
+                padding: 24px;
+                border-radius: 18px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .control-panel {
+                flex-direction: column;
+            }
+
+            textarea {
+                height: 180px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="wrapper">
+
+    <div class="header">
+
+        <h1>LUA VIRTUAL MACHINE OBFUSCATOR</h1>
+
+        <p>
+            เปลี่ยน Lua/Luau Source Code เป็นข้อมูลตัวเลข
+            พร้อมระบบแบ่งส่วนและประกอบกลับขณะทำงาน
+        </p>
+
+    </div>
+
+
+    <!-- INPUT -->
+
+    <div class="label">
+        📥 ใส่ซอร์สโค้ด LUA / LUAU ที่นี่
+    </div>
+
+    <textarea
+        id="sourceCode"
+        spellcheck="false"
+        placeholder="-- ใส่โค้ด Lua ของคุณที่นี่&#10;print('Hello World')"
+    ></textarea>
+
+
+    <!-- COMPILE -->
+
+    <div class="btn-container">
+
+        <button
+            class="btn-glow"
+            id="obfuscateBtn"
+            type="button"
+        >
+            ⚡ COMPILE & OBFUSCATE NOW
+        </button>
+
+    </div>
+
+
+    <!-- OUTPUT -->
+
+    <div class="output-box">
+
+        <div class="label">
+            📤 สคริปต์ที่สร้างขึ้น
+        </div>
+
+        <textarea
+            id="outputScript"
+            spellcheck="false"
+            placeholder="คลิกปุ่มด้านบนเพื่อสร้างสคริปต์..."
+            readonly
+        ></textarea>
+
+    </div>
+
+
+    <!-- CONTROLS -->
+
+    <div class="control-panel">
+
+        <button
+            class="btn-secondary"
+            id="copyBtn"
+            type="button"
+        >
+            📋 คัดลอกสคริปต์ทั้งหมด
+        </button>
+
+        <button
+            class="btn-secondary"
+            id="downloadBtn"
+            type="button"
+        >
+            💾 ดาวน์โหลดสคริปต์ (.lua)
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+"use strict";
+
+
+/* =========================================================
+   Utility
+========================================================= */
+
+function encodeToHexMix(source) {
+
+    const result = [];
+
+    for (let i = 0; i < source.length; i++) {
+
+        const code = source.charCodeAt(i);
+
+        result.push(
+            "0x" +
+            code
+                .toString(16)
+                .toUpperCase()
+                .padStart(2, "0")
+        );
+
+    }
+
+    return result;
+}
+
+
+/* =========================================================
+   Shuffle / Chunk
+========================================================= */
+
+function createChunks(data, numberOfChunks = 4) {
+
+    if (!data.length) {
+        return [];
+    }
+
+    const chunkSize = Math.max(
+        1,
+        Math.ceil(data.length / numberOfChunks)
+    );
+
+    const chunks = [];
+
+    for (
+        let i = 0;
+        i < data.length;
+        i += chunkSize
+    ) {
+
+        chunks.push(
+            data.slice(i, i + chunkSize)
+        );
+
+    }
+
+    while (chunks.length < numberOfChunks) {
+
+        chunks.push([]);
+
+    }
+
+    return chunks.slice(0, numberOfChunks);
+}
+
+
+/* =========================================================
+   Lua Table Generator
+========================================================= */
+
+function luaTable(values) {
+
+    if (!values.length) {
+        return "{}";
+    }
+
+    return "{\n        " +
+        values.join(", ") +
+        "\n    }";
+}
+
+
+/* =========================================================
+   Generate Lua VM Loader
+========================================================= */
+
+function generateLuaVM(chunks) {
+
+    const partA = luaTable(chunks[0] || []);
+    const partB = luaTable(chunks[1] || []);
+    const partC = luaTable(chunks[2] || []);
+    const partD = luaTable(chunks[3] || []);
+
+    return `--[[
+    Lua Custom VM Obfuscator
+    Generated locally in browser.
+
+    NOTE:
+    This is an educational source transformation layer.
+--]]
+
+local _partA = ${partA}
+
+local _partB = ${partB}
+
+local _partC = ${partC}
+
+local _partD = ${partD}
+
+
+local function _appendPart(target, part)
+
+    for _, value in ipairs(part) do
+        target[#target + 1] = value
+    end
+
+end
+
+
+local function _executeVM()
+
+    local _data = {}
+
+    -- Reassemble chunks
+    _appendPart(_data, _partA)
+    _appendPart(_data, _partB)
+    _appendPart(_data, _partC)
+    _appendPart(_data, _partD)
+
+
+    -- Convert hexadecimal byte values
+    -- back into characters.
+
+    local _source = {}
+
+    for i = 1, #_data do
+
+        _source[i] = string.char(_data[i])
+
+    end
+
+
+    local _code = table.concat(_source)
+
+
+    -- Lua/Luau compatibility:
+    -- Some runtimes provide loadstring,
+    -- while others provide load.
+
+    local _loader =
+        loadstring
+        or load
+
+
+    if type(_loader) ~= "function" then
+
+        error(
+            "[VM Error] Runtime นี้ไม่รองรับ loadstring/load"
+        )
+
+    end
+
+
+    local _compiled, _error =
+        _loader(_code)
+
+
+    if not _compiled then
+
+        error(
+            "[VM Error] ไม่สามารถ compile source ได้: "
+            .. tostring(_error)
+        )
+
+    end
+
+
+    return _compiled()
+
+end
+
+
+return _executeVM()
+`;
+}
+
+
+/* =========================================================
+   Main Obfuscator
+========================================================= */
+
+function obfuscateLua() {
+
+    const input =
+        document.getElementById("sourceCode").value;
+
+    const output =
+        document.getElementById("outputScript");
+
+
+    if (!input.trim()) {
+
+        alert(
+            "กรุณากรอกโค้ด Lua/Luau ก่อนทำการแปลงครับ!"
+        );
+
+        return;
+    }
+
+
+    try {
+
+        /*
+         * Convert source -> hexadecimal bytes
+         */
+
+        const encoded =
+            encodeToHexMix(input);
+
+
+        /*
+         * Split source into 4 parts
+         */
+
+        const chunks =
+            createChunks(encoded, 4);
+
+
+        /*
+         * Generate Lua loader
+         */
+
+        const result =
+            generateLuaVM(chunks);
+
+
+        /*
+         * Display result
+         */
+
+        output.value = result;
+
+
+        /*
+         * Move cursor to beginning
+         */
+
+        output.scrollTop = 0;
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "เกิดข้อผิดพลาดระหว่างสร้างสคริปต์: " +
+            error.message
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   Copy
+========================================================= */
+
+async function handleCopy() {
+
+    const output =
+        document.getElementById("outputScript");
+
+    const button =
+        document.getElementById("copyBtn");
+
+
+    if (!output.value.trim()) {
+
+        alert(
+            "ยังไม่มีสคริปต์ให้คัดลอก กรุณากดปุ่มแปลงโค้ดก่อนครับ!"
+        );
+
+        return;
+    }
+
+
+    try {
+
+        await navigator.clipboard.writeText(
+            output.value
+        );
+
+        const oldText =
+            button.innerHTML;
+
+
+        button.innerHTML =
+            "✅ คัดลอกเรียบร้อย!";
+
+        button.classList.add(
+            "btn-copy-success"
+        );
+
+
+        setTimeout(() => {
+
+            button.innerHTML =
+                oldText;
+
+            button.classList.remove(
+                "btn-copy-success"
+            );
+
+        }, 2000);
+
+
+    } catch (error) {
+
+        /*
+         * Fallback สำหรับ browser
+         * ที่ไม่รองรับ Clipboard API
+         */
+
+        output.removeAttribute("readonly");
+
+        output.select();
+
+        document.execCommand("copy");
+
+        output.setAttribute("readonly", "");
+
+        alert("คัดลอกสคริปต์เรียบร้อยแล้ว!");
+
+    }
+
+}
+
+
+/* =========================================================
+   Download
+========================================================= */
+
+function handleDownload() {
+
+    const output =
+        document.getElementById("outputScript").value;
+
+
+    if (!output.trim()) {
+
+        alert(
+            "ยังไม่มีสคริปต์ให้ดาวน์โหลด!"
+        );
+
+        return;
+    }
+
+
+    const blob =
+        new Blob(
+            [output],
+            {
+                type: "text/plain;charset=utf-8"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(blob);
+
+
+    const link =
+        document.createElement("a");
+
+
+    link.href = url;
+
+    link.download =
+        "obfuscated_protected.lua";
+
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+
+
+    /*
+     * Free browser memory
+     */
+
+    setTimeout(() => {
+
+        URL.revokeObjectURL(url);
+
+    }, 1000);
+
+}
+
+
+/* =========================================================
+   Button Events
+========================================================= */
+
+document
+    .getElementById("obfuscateBtn")
+    .addEventListener(
+        "click",
+        obfuscateLua
+    );
+
+
+document
+    .getElementById("copyBtn")
+    .addEventListener(
+        "click",
+        handleCopy
+    );
+
+
+document
+    .getElementById("downloadBtn")
+    .addEventListener(
+        "click",
+        handleDownload
+    );
+
+
+/* =========================================================
+   Keyboard Shortcut
+   Ctrl + Enter = Obfuscate
+========================================================= */
+
+document
+    .getElementById("sourceCode")
+    .addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                (event.ctrlKey || event.metaKey) &&
+                event.key === "Enter"
+            ) {
+
+                event.preventDefault();
+
+                obfuscateLua();
+
+            }
+
+        }
+    );
+
+</script>
+
+</body>
+</html>
