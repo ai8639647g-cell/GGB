@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Code Shield Ultimate V4 - Advanced Web Engine</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <style>
+        .neon-border {
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.25);
+        }
+
+        .neon-glow-cyan {
+            text-shadow: 0 0 8px rgba(34, 211, 238, 0.6);
+        }
+
+        .neon-glow-purple {
+            text-shadow: 0 0 8px rgba(168, 85, 247, 0.6);
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #070a12;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+
+        textarea {
+            tab-size: 4;
+        }
+
+        iframe {
+            background: white;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-[#070a12] text-slate-200 min-h-screen flex flex-col font-sans selection:bg-indigo-600 selection:text-white"
+>
+
+<!-- =========================================================
+     HEADER
+========================================================= -->
+
+<header
+    class="border-b border-slate-800 bg-[#0f172a]/90 backdrop-blur sticky top-0 z-50 shadow-md"
+>
+    <div
+        class="max-w-7xl mx-auto px-4 py-3.5 flex items-center justify-between"
+    >
+
+        <div class="flex items-center space-x-3">
+
+            <div
+                class="bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-600
+                       p-2.5 rounded-xl text-white shadow-lg shadow-purple-500/30"
+            >
+                <i class="fa-solid fa-shield-halved text-2xl animate-pulse"></i>
+            </div>
+
+            <div>
+
+                <div class="flex items-center space-x-2">
+
+                    <h1
+                        class="text-2xl font-black tracking-wider
+                               bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400
+                               bg-clip-text text-transparent"
+                    >
+                        CODE SHIELD ULTIMATE
+                    </h1>
+
+                    <span
+                        class="text-[10px] bg-indigo-900/60 border border-indigo-700
+                               text-indigo-300 px-2 py-0.5 rounded font-mono font-bold"
+                    >
+                        V4.0
+                    </span>
+
+                </div>
+
+                <p class="text-xs text-cyan-400 font-mono neon-glow-cyan">
+                    ระบบแปลงโค้ดเป็นตัวเลข พร้อมเอนจิ้นจำลองการแสดงผลสด
+                </p>
+
+            </div>
+        </div>
+
+        <div
+            class="hidden sm:flex items-center space-x-3
+                   bg-slate-900/90 border border-slate-800
+                   px-4 py-2 rounded-xl"
+        >
+
+            <span
+                class="h-2 w-2 rounded-full bg-emerald-400
+                       inline-block animate-ping"
+            ></span>
+
+            <span class="text-xs text-slate-400 font-mono">
+                CORE ENGINE:
+                <span class="text-emerald-400 font-bold">
+                    ACTIVE
+                </span>
+            </span>
+
+        </div>
+
+    </div>
+</header>
+
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
+<main
+    class="max-w-7xl mx-auto px-4 py-6 w-full flex-grow
+           grid grid-cols-1 lg:grid-cols-12 gap-6"
+>
+
+    <!-- =====================================================
+         LEFT SIDE
+    ====================================================== -->
+
+    <div class="lg:col-span-5 flex flex-col gap-6">
+
+        <!-- RAW CODE -->
+
+        <div
+            class="bg-[#0f172a]/70 border border-slate-800/80
+                   rounded-2xl p-5 shadow-2xl
+                   flex flex-col h-[320px] backdrop-blur-sm"
+        >
+
+            <div class="flex items-center justify-between mb-3">
+
+                <div class="flex items-center space-x-2">
+
+                    <i class="fa-solid fa-code text-indigo-400"></i>
+
+                    <h2 class="text-sm font-bold text-slate-300 tracking-wide">
+                        1. วางโค้ดดิบ
+                    </h2>
+
+                </div>
+
+                <button
+                    onclick="clearInput()"
+                    class="text-xs text-slate-500 hover:text-rose-400
+                           transition-all flex items-center space-x-1"
+                >
+
+                    <i class="fa-solid fa-trash-can"></i>
+
+                    <span>
+                        ล้างช่องนี้
+                    </span>
+
+                </button>
+
+            </div>
+
+            <textarea
+                id="rawCodeInput"
+                placeholder="วาง HTML, CSS, JavaScript หรือโค้ดเว็บของคุณที่นี่..."
+                class="w-full flex-grow bg-[#04060b]
+                       border border-slate-800 rounded-xl p-3.5
+                       font-mono text-xs text-indigo-300
+                       placeholder-slate-600
+                       focus:ring-2 focus:ring-indigo-500
+                       focus:border-transparent focus:outline-none
+                       resize-none transition-all duration-200 shadow-inner"
+            ></textarea>
+
+        </div>
+
+
+        <!-- SETTINGS -->
+
+        <div
+            class="bg-[#0f172a]/70 border border-slate-800/80
+                   rounded-2xl p-5 shadow-2xl flex flex-col gap-4
+                   backdrop-blur-sm"
+        >
+
+            <div class="flex items-center justify-between">
+
+                <h2
+                    class="text-sm font-bold text-slate-300
+                           flex items-center space-x-2 tracking-wide"
+                >
+
+                    <i class="fa-solid fa-sliders text-purple-400"></i>
+
+                    <span>
+                        2. ตั้งค่าระดับความปลอดภัย
+                    </span>
+
+                </h2>
+
+            </div>
+
+
+            <!-- SECURITY LEVEL -->
+
+            <div
+                class="bg-[#070a12] border border-slate-800
+                       p-3 rounded-xl flex items-center justify-between"
+            >
+
+                <span class="text-xs text-slate-400 font-medium">
+                    ระดับการเข้ารหัส:
+                </span>
+
+                <select
+                    id="securityLevel"
+                    class="bg-slate-800 border border-slate-700
+                           text-slate-200 text-xs rounded-lg
+                           px-2.5 py-1.5
+                           focus:ring-1 focus:ring-purple-500
+                           focus:outline-none cursor-pointer"
+                >
+
+                    <option value="standard">
+                        Standard Node
+                    </option>
+
+                    <option value="ultra">
+                        Ultra Secure Layer
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- BUTTONS -->
+
+            <div class="grid grid-cols-2 gap-3.5">
+
+                <button
+                    onclick="encryptCodeToNumbers()"
+                    class="bg-gradient-to-r from-indigo-600 to-indigo-500
+                           hover:from-indigo-500 hover:to-indigo-400
+                           text-white font-bold py-3.5 px-4 rounded-xl
+                           shadow-lg shadow-indigo-600/10
+                           transition-all flex flex-col items-center
+                           justify-center gap-1.5
+                           active:scale-[0.97]"
+                >
+
+                    <i class="fa-solid fa-lock text-lg"></i>
+
+                    <span class="text-xs">
+                        ล็อกโค้ดเป็นตัวเลข
+                    </span>
+
+                </button>
+
+
+                <button
+                    onclick="decryptNumbersToPreview()"
+                    class="bg-gradient-to-r from-emerald-600 to-cyan-600
+                           hover:from-emerald-500 hover:to-cyan-500
+                           text-white font-bold py-3.5 px-4 rounded-xl
+                           shadow-lg shadow-emerald-600/10
+                           transition-all flex flex-col items-center
+                           justify-center gap-1.5
+                           active:scale-[0.97]"
+                >
+
+                    <i class="fa-solid fa-play text-lg"></i>
+
+                    <span class="text-xs">
+                        ถอดรหัสรันแอป
+                    </span>
+
+                </button>
+
+            </div>
+
+
+            <!-- RESET -->
+
+            <button
+                onclick="clearEverything()"
+                class="w-full bg-slate-800/80
+                       hover:bg-rose-950/40 hover:text-rose-400
+                       border border-slate-700/60 text-slate-400
+                       py-3 rounded-xl text-xs font-semibold
+                       transition-all active:scale-[0.99]
+                       flex items-center justify-center space-x-2"
+            >
+
+                <i class="fa-solid fa-broom"></i>
+
+                <span>
+                    เคลียร์หน้าจอและรีเซ็ตทุกระบบ
+                </span>
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         RIGHT SIDE
+    ====================================================== -->
+
+    <div class="lg:col-span-7 flex flex-col gap-6">
+
+        <!-- NUMBER STORAGE -->
+
+        <div
+            class="bg-[#0f172a]/70 border border-slate-800/80
+                   rounded-2xl p-5 shadow-2xl
+                   flex flex-col h-[300px]
+                   backdrop-blur-sm neon-border"
+        >
+
+            <div
+                class="flex flex-col sm:flex-row
+                       sm:items-center justify-between
+                       gap-2 mb-3"
+            >
+
+                <div class="flex items-center space-x-2">
+
+                    <i class="fa-solid fa-fingerprint text-cyan-400"></i>
+
+                    <h2 class="text-sm font-bold text-slate-300 tracking-wide">
+                        3. คลังชุดตัวเลขระบบปิด
+                    </h2>
+
+                </div>
+
+
+                <div
+                    class="flex items-center space-x-1.5
+                           self-end sm:self-auto"
+                >
+
+                    <!-- IMPORT -->
+
+                    <label
+                        class="text-xs bg-slate-800 border border-slate-700
+                               text-slate-300 px-2.5 py-1.5 rounded-lg
+                               hover:bg-slate-700 cursor-pointer
+                               transition-all flex items-center space-x-1"
+                    >
+
+                        <i class="fa-solid fa-file-import"></i>
+
+                        <span>
+                            โหลดไฟล์
+                        </span>
+
+                        <input
+                            type="file"
+                            id="fileImporter"
+                            accept=".txt"
+                            class="hidden"
+                            onchange="importTxtFile(this)"
+                        >
+
+                    </label>
+
+
+                    <!-- DOWNLOAD -->
+
+                    <button
+                        onclick="downloadAsTxtFile()"
+                        class="text-xs bg-indigo-950
+                               border border-indigo-700
+                               text-indigo-300 px-2.5 py-1.5
+                               rounded-lg hover:bg-indigo-600
+                               hover:text-white transition-all"
+                    >
+
+                        <i class="fa-solid fa-file-arrow-down"></i>
+
+                        <span id="downloadBtnTxt">
+                            เซฟ
+                        </span>
+
+                    </button>
+
+
+                    <!-- COPY -->
+
+                    <button
+                        onclick="copyOutput()"
+                        class="text-xs bg-slate-800
+                               border border-slate-700
+                               text-cyan-400 px-2.5 py-1.5
+                               rounded-lg hover:bg-cyan-500
+                               hover:text-slate-950 transition-all"
+                    >
+
+                        <i class="fa-regular fa-copy"></i>
+
+                        <span id="copyBtnTxt">
+                            คัดลอก
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <textarea
+                id="outputArea"
+                placeholder="ชุดตัวเลขที่เข้ารหัสจะแสดงตรงนี้..."
+                class="w-full flex-grow bg-[#04060b]
+                       border border-slate-800 rounded-xl p-3
+                       font-mono text-xs text-cyan-400
+                       placeholder-slate-700
+                       focus:ring-1 focus:ring-cyan-500
+                       focus:outline-none resize-none
+                       overflow-y-auto break-all"
+            ></textarea>
+
+        </div>
+
+
+        <!-- LIVE PREVIEW -->
+
+        <div
+            class="bg-[#0f172a]/70 border border-slate-800/80
+                   rounded-2xl p-5 shadow-2xl
+                   flex flex-col min-h-[500px]
+                   backdrop-blur-sm neon-border"
+        >
+
+            <div
+                class="flex flex-col sm:flex-row
+                       sm:items-center justify-between
+                       gap-3 mb-3"
+            >
+
+                <div class="flex items-center space-x-2">
+
+                    <i class="fa-solid fa-display text-purple-400"></i>
+
+                    <h2 class="text-sm font-bold text-slate-300">
+                        4. หน้าจอระบบแอปพลิเคชันจำลองแบบสด
+                    </h2>
+
+                </div>
+
+
+                <button
+                    onclick="openFullscreenPreview()"
+                    class="text-xs bg-purple-950
+                           border border-purple-700
+                           text-purple-300 px-3 py-2
+                           rounded-lg hover:bg-purple-600
+                           hover:text-white transition-all"
+                >
+
+                    <i class="fa-solid fa-expand"></i>
+
+                    ขยายเต็มจอ
+
+                </button>
+
+            </div>
+
+
+            <div
+                class="flex-grow bg-white rounded-xl
+                       overflow-hidden border border-slate-700
+                       min-h-[400px]"
+            >
+
+                <iframe
+                    id="appPreviewFrame"
+                    title="Live Application Preview"
+                    class="w-full h-full min-h-[400px] border-0"
+                    sandbox="allow-scripts allow-forms allow-modals allow-popups"
+                ></iframe>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<!-- =========================================================
+     FOOTER
+========================================================= -->
+
+<footer
+    class="border-t border-slate-800
+           bg-[#0b0f19] px-4 py-4"
+>
+
+    <div
+        class="max-w-7xl mx-auto
+               flex flex-col sm:flex-row
+               items-center justify-between
+               gap-2"
+    >
+
+        <span class="text-[11px] text-slate-600 font-mono">
+            CODE SHIELD ULTIMATE V4.0
+        </span>
+
+        <span class="text-[11px] text-slate-600">
+            Local Processing Engine
+        </span>
+
+    </div>
+
+</footer>
+
+
+<!-- =========================================================
+     JAVASCRIPT ENGINE
+========================================================= -->
+
+<script>
+
+"use strict";
+
+/*
+    =========================================================
+    CODE SHIELD CORE ENGINE V4.0
+    =========================================================
+*/
+
+let latestDecodedHtml = "";
+
+
+/*
+    =========================================================
+    1. ENCRYPT
+    โค้ด -> ตัวเลข
+    =========================================================
+*/
+
+function encryptCodeToNumbers() {
+
+    const rawCode =
+        document.getElementById("rawCodeInput").value;
+
+    const securityLevel =
+        document.getElementById("securityLevel").value;
+
+    const outputArea =
+        document.getElementById("outputArea");
+
+
+    if (!rawCode.trim()) {
+
+        alert(
+            "โปรดวางโค้ดในช่องด้านซ้ายก่อนครับ"
+        );
+
+        return;
+    }
+
+
+    let numberSequence = [];
+
+
+    /*
+        Standard
+        multiplier = 3
+        offset = 7
+
+        Ultra
+        multiplier = 5
+        offset = 12
+    */
+
+    const offset =
+        securityLevel === "ultra"
+            ? 12
+            : 7;
+
+    const multiplier =
+        securityLevel === "ultra"
+            ? 5
+            : 3;
+
+
+    /*
+        Header
+    */
+
+    numberSequence.push(
+        securityLevel === "ultra"
+            ? "U"
+            : "S"
+    );
+
+
+    /*
+        Convert characters
+    */
+
+    for (let i = 0; i < rawCode.length; i++) {
+
+        const charCode =
+            rawCode.charCodeAt(i);
+
+        const encoded =
+            charCode * multiplier + offset;
+
+        numberSequence.push(encoded);
+
+    }
+
+
+    /*
+        Show output
+    */
+
+    outputArea.value =
+        numberSequence.join("-");
+
+
+    /*
+        Status
+    */
+
+    showStatus(
+        "เข้ารหัสสำเร็จ!",
+        "success"
+    );
+
+}
+
+
+/*
+    =========================================================
+    2. DECRYPT
+    ตัวเลข -> HTML
+    =========================================================
+*/
+
+function decryptNumbersToPreview() {
+
+    let outputText =
+        document.getElementById("outputArea").value.trim();
+
+    const iframe =
+        document.getElementById("appPreviewFrame");
+
+
+    if (!outputText) {
+
+        alert(
+            "ไม่พบชุดตัวเลข กรุณาใส่ข้อมูลก่อนครับ"
+        );
+
+        return;
+    }
+
+
+    try {
+
+        /*
+            Auto clean
+        */
+
+        outputText =
+            outputText.replace(/\s+/g, "");
+
+
+        const numberArray =
+            outputText.split("-");
+
+
+        if (numberArray.length < 2) {
+
+            throw new Error(
+                "Invalid code pattern"
+            );
+
+        }
+
+
+        /*
+            Detect security level
+        */
+
+        let multiplier = 3;
+        let offset = 7;
+        let startIndex = 0;
+
+
+        if (numberArray[0] === "S") {
+
+            multiplier = 3;
+            offset = 7;
+            startIndex = 1;
+
+        }
+
+        else if (numberArray[0] === "U") {
+
+            multiplier = 5;
+            offset = 12;
+            startIndex = 1;
+
+        }
+
+        else {
+
+            /*
+                ถ้าไม่มี header
+                ให้ถือเป็น Standard
+            */
+
+            multiplier = 3;
+            offset = 7;
+            startIndex = 0;
+
+        }
+
+
+        let decodedCode = "";
+
+
+        /*
+            Decode
+        */
+
+        for (
+            let i = startIndex;
+            i < numberArray.length;
+            i++
+        ) {
+
+            const numStr =
+                numberArray[i];
+
+
+            if (
+                numStr !== "" &&
+                /^-?\d+$/.test(numStr)
+            ) {
+
+                const encodedNumber =
+                    parseInt(numStr, 10);
+
+
+                const originalChar =
+                    (encodedNumber - offset) /
+                    multiplier;
+
+
+                /*
+                    Validate character
+                */
+
+                if (
+                    !Number.isInteger(originalChar) ||
+                    originalChar < 0 ||
+                    originalChar > 0xFFFF
+                ) {
+
+                    throw new Error(
+                        "Invalid character"
+                    );
+
+                }
+
+
+                decodedCode +=
+                    String.fromCharCode(
+                        originalChar
+                    );
+
+            }
+
+        }
+
+
+        if (!decodedCode) {
+
+            throw new Error(
+                "Empty decoded code"
+            );
+
+        }
+
+
+        /*
+            Save latest HTML
+        */
+
+        latestDecodedHtml =
+            decodedCode;
+
+
+        /*
+            Render iframe
+        */
+
+        const iframeDoc =
+            iframe.contentDocument ||
+            iframe.contentWindow.document;
+
+
+        iframeDoc.open();
+
+        iframeDoc.write(decodedCode);
+
+        iframeDoc.close();
+
+
+        showStatus(
+            "ถอดรหัสและแสดงผลสำเร็จ!",
+            "success"
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+
+        alert(
+            "🚨 ไม่สามารถถอดรหัสได้\n\n" +
+            "กรุณาตรวจสอบชุดตัวเลขว่าไม่ขาดหรือมีอักขระผิดรูปแบบ"
+        );
+
+    }
+
+}
+
+
+/*
+    =========================================================
+    3. IMPORT TXT
+    =========================================================
+*/
+
+function importTxtFile(input) {
+
+    const file =
+        input.files[0];
+
+
+    if (!file) {
+        return;
+    }
+
+
+    if (
+        !file.name.toLowerCase().endsWith(".txt")
+    ) {
+
+        alert(
+            "กรุณาเลือกไฟล์ .txt เท่านั้น"
+        );
+
+        input.value = "";
+
+        return;
+    }
+
+
+    const reader =
+        new FileReader();
+
+
+    reader.onload =
+        function (event) {
+
+            document.getElementById(
+                "outputArea"
+            ).value =
+                event.target.result;
+
+
+            alert(
+                "📥 โหลดชุดข้อมูลจากไฟล์สำเร็จ!\n\n" +
+                "กดปุ่มถอดรหัสเพื่อแสดงผล"
+            );
+
+        };
+
+
+    reader.onerror =
+        function () {
+
+            alert(
+                "ไม่สามารถอ่านไฟล์ได้"
+            );
+
+        };
+
+
+    reader.readAsText(
+        file,
+        "UTF-8"
+    );
+
+
+    /*
+        Reset file input
+        เพื่อให้สามารถเลือกไฟล์เดิมซ้ำได้
+    */
+
+    input.value = "";
+
+}
+
+
+/*
+    =========================================================
+    4. DOWNLOAD TXT
+    =========================================================
+*/
+
+function downloadAsTxtFile() {
+
+    const outputText =
+        document.getElementById(
+            "outputArea"
+        ).value.trim();
+
+
+    if (!outputText) {
+
+        alert(
+            "ยังไม่มีข้อมูลตัวเลขสำหรับบันทึก"
+        );
+
+        return;
+    }
+
+
+    const blob =
+        new Blob(
+            [outputText],
+            {
+                type: "text/plain;charset=utf-8"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(blob);
+
+
+    const link =
+        document.createElement("a");
+
+
+    link.href = url;
+
+
+    const dateStr =
+        new Date()
+            .toISOString()
+            .slice(0, 10);
+
+
+    link.download =
+        `shielded-code-${dateStr}.txt`;
+
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+
+
+    URL.revokeObjectURL(url);
+
+
+    const buttonText =
+        document.getElementById(
+            "downloadBtnTxt"
+        );
+
+
+    buttonText.innerText =
+        "บันทึกแล้ว!";
+
+
+    setTimeout(
+        function () {
+
+            buttonText.innerText =
+                "เซฟ";
+
+        },
+        2000
+    );
+
+}
+
+
+/*
+    =========================================================
+    5. FULLSCREEN PREVIEW
+    =========================================================
+*/
+
+function openFullscreenPreview() {
+
+    if (!latestDecodedHtml) {
+
+        /*
+            ถ้ายังไม่ได้ Decode
+            ลอง Decode จาก Output ก่อน
+        */
+
+        decryptNumbersToPreview();
+
+
+        if (!latestDecodedHtml) {
+            return;
+        }
+
+    }
+
+
+    /*
+        เปิดหน้าต่างใหม่
+    */
+
+    const fullScreenWindow =
+        window.open(
+            "",
+            "_blank"
+        );
+
+
+    if (!fullScreenWindow) {
+
+        alert(
+            "Browser บล็อกหน้าต่างใหม่\n" +
+            "กรุณาอนุญาต Pop-up สำหรับเว็บไซต์นี้"
+        );
+
+        return;
+    }
+
+
+    fullScreenWindow.document.open();
+
+    fullScreenWindow.document.write(
+        latestDecodedHtml
+    );
+
+    fullScreenWindow.document.close();
+
+}
+
+
+/*
+    =========================================================
+    6. CLEAR INPUT
+    =========================================================
+*/
+
+function clearInput() {
+
+    document.getElementById(
+        "rawCodeInput"
+    ).value = "";
+
+}
+
+
+/*
+    =========================================================
+    7. CLEAR EVERYTHING
+    =========================================================
+*/
+
+function clearEverything() {
+
+    document.getElementById(
+        "rawCodeInput"
+    ).value = "";
+
+
+    document.getElementById(
+        "outputArea"
+    ).value = "";
+
+
+    latestDecodedHtml = "";
+
+
+    const iframe =
+        document.getElementById(
+            "appPreviewFrame"
+        );
+
+
+    const iframeDoc =
+        iframe.contentDocument ||
+        iframe.contentWindow.document;
+
+
+    iframeDoc.open();
+
+    iframeDoc.write("");
+
+    iframeDoc.close();
+
+
+    document.getElementById(
+        "securityLevel"
+    ).value = "standard";
+
+}
+
+
+/*
+    =========================================================
+    8. COPY OUTPUT
+    =========================================================
+*/
+
+async function copyOutput() {
+
+    const textToCopy =
+        document.getElementById(
+            "outputArea"
+        ).value;
+
+
+    if (!textToCopy.trim()) {
+
+        alert(
+            "ยังไม่มีข้อมูลสำหรับคัดลอก"
+        );
+
+        return;
+    }
+
+
+    try {
+
+        await navigator.clipboard.writeText(
+            textToCopy
+        );
+
+
+        const btnTxt =
+            document.getElementById(
+                "copyBtnTxt"
+            );
+
+
+        btnTxt.innerText =
+            "คัดลอกสำเร็จ!";
+
+
+        setTimeout(
+            function () {
+
+                btnTxt.innerText =
+                    "คัดลอก";
+
+            },
+            2000
+        );
+
+    }
+
+    catch (error) {
+
+        /*
+            Fallback สำหรับ browser
+            ที่ไม่รองรับ Clipboard API
+        */
+
+        const temp =
+            document.createElement("textarea");
+
+
+        temp.value =
+            textToCopy;
+
+
+        document.body.appendChild(temp);
+
+
+        temp.select();
+
+
+        try {
+
+            document.execCommand("copy");
+
+            alert(
+                "คัดลอกข้อมูลแล้ว!"
+            );
+
+        }
+
+        catch (e) {
+
+            alert(
+                "Browser ไม่อนุญาตให้คัดลอกอัตโนมัติ"
+            );
+
+        }
+
+
+        document.body.removeChild(temp);
+
+    }
+
+}
+
+
+/*
+    =========================================================
+    9. STATUS HELPER
+    =========================================================
+*/
+
+function showStatus(message, type) {
+
+    /*
+        ใช้ console เป็นหลัก
+        เพื่อไม่รบกวนการใช้งานด้วย alert
+    */
+
+    if (type === "success") {
+
+        console.log(
+            "✓ CODE SHIELD:",
+            message
+        );
+
+    }
+
+    else {
+
+        console.warn(
+            "CODE SHIELD:",
+            message
+        );
+
+    }
+
+}
+
+
+/*
+    =========================================================
+    10. KEYBOARD SHORTCUTS
+    =========================================================
+*/
+
+document.addEventListener(
+    "keydown",
+    function (event) {
+
+        /*
+            Ctrl + Enter
+            = Encrypt
+        */
+
+        if (
+            event.ctrlKey &&
+            event.key === "Enter"
+        ) {
+
+            event.preventDefault();
+
+            encryptCodeToNumbers();
+
+        }
+
+
+        /*
+            Ctrl + Shift + Enter
+            = Decode
+        */
+
+        if (
+            event.ctrlKey &&
+            event.shiftKey &&
+            event.key === "Enter"
+        ) {
+
+            event.preventDefault();
+
+            decryptNumbersToPreview();
+
+        }
+
+    }
+);
+
+
+/*
+    =========================================================
+    ENGINE READY
+    =========================================================
+*/
+
+console.log(
+    "%c CODE SHIELD ULTIMATE V4.0 READY ",
+    "background:#4f46e5;color:white;font-weight:bold;padding:6px"
+);
+
+</script>
+
+</body>
+</html>
