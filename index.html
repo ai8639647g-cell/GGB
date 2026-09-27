@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Multi-Language Universal Encoder</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f1115; color: #e2e8f0; padding: 30px 15px; text-align: center; margin: 0; }
+        .container { max-width: 700px; margin: 0 auto; background: #1a1f2c; padding: 30px; border-radius: 16px; box-shadow: 0 10px 32px rgba(0,0,0,0.6); border: 1px solid #2d3748; }
+        h2 { color: #38bdf8; margin-top: 0; margin-bottom: 5px; font-size: 24px; letter-spacing: 0.5px; }
+        p.subtitle { color: #94a3b8; font-size: 13px; margin-bottom: 25px; }
+        textarea { width: 100%; height: 140px; background: #090d16; border: 2px solid #334155; border-radius: 10px; color: #38bdf8; padding: 15px; font-family: 'Courier New', Courier, monospace; box-sizing: border-box; resize: none; margin-bottom: 20px; font-size: 14px; transition: all 0.3s ease; }
+        textarea:focus { border-color: #38bdf8; box-shadow: 0 0 14px rgba(56,189,248,0.3); outline: none; }
+        .btn-group { display: flex; gap: 12px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap; }
+        button { background: #38bdf8; color: #0f1115; border: none; padding: 12px 26px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; font-size: 14px; box-shadow: 0 4px 12px rgba(56,189,248,0.2); }
+        button:hover { background: #7dd3fc; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(56,189,248,0.4); }
+        button:active { transform: translateY(0); }
+        button.secondary { background: #1e293b; color: #f8fafc; border: 1px solid #475569; box-shadow: none; }
+        button.secondary:hover { background: #334155; }
+        .status-box { font-size: 13px; color: #94a3b8; margin-top: 15px; background: #0f172a; padding: 12px; border-radius: 8px; display: block; border-left: 4px solid #38bdf8; text-align: left; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>⚡ Universal Code to Alphanumeric Transformer</h2>
+    <p class="subtitle">แปลงโค้ดทุกภาษา (HTML, JS, Java, MC Function) เป็นรหัสอังกฤษผสมตัวเลข ไร้ Error 100%</p>
+    
+    <!-- ช่องใส่โค้ดต้นฉบับ -->
+    <textarea id="rawInput" placeholder="วางโค้ดที่ต้องการแปลงที่นี่... (ใส่ได้ทุกภาษา รองรับอักขระพิเศษทุกรูปแบบ)"></textarea>
+    
+    <div class="btn-group">
+        <button onclick="transformCode(true)">🔒 แปลงโค้ด ➡️ เป็นเลขผสมอังกฤษ</button>
+        <button onclick="transformCode(false)" class="secondary">🔓 ถอดรหัส ➡️ กลับเป็นโค้ดเดิม</button>
+    </div>
+    
+    <!-- ช่องแสดงรหัสที่แปลงแล้ว -->
+    <textarea id="secureOutput" placeholder="ผลลัพธ์รหัสลับอังกฤษผสมตัวเลข..." readonly></textarea>
+    
+    <div class="btn-group">
+        <button onclick="copyOutput()" style="background:#10b981; color:#fff; box-shadow: 0 4px 12px rgba(16,185,129,0.2);">📋 คัดลอกรหัส (Copy)</button>
+        <button onclick="downloadOutput()" style="background:#f59e0b; color:#fff; box-shadow: 0 4px 12px rgba(245,158,11,0.2);">💾 ดาวน์โหลดไฟล์ (.txt)</button>
+    </div>
+    
+    <div class="status-box" id="statusMessage">🟢 สถานะ: ระบบพร้อมใช้งาน รองรับการทำงานแบบ Cross-Language และไม่มีการส่งข้อมูลออกนอกเครื่อง</div>
+</div>
+
+<script>
+// ระบบความปลอดภัยแบบผสมผสานอักษรและตัวเลข (Alphanumeric Obfuscation Engine)
+// ใช้กลไกแปลงอักขระเป็นสตรีมไบนารีระดับสากล เพื่อไม่ให้หลุดสัญลักษณ์ที่ทำให้เกิด Error
+
+function encodeUniversal(text) {
+    if (!text.trim()) return "";
+    try {
+        // ขั้นตอนที่ 1: แปลงข้อความเป็น UTF-8 เพื่อรองรับภาษาไทยและอักขระพิเศษทั้งหมด
+        let bytes = new TextEncoder().encode(text);
+        
+        // ขั้นตอนที่ 2: แปลงไบนารีเป็นอักษรผ่าน Base64 สากล ป้องกัน Error จากเว้นวรรคและการขึ้นบรรทัดใหม่
+        let base64 = btoa(String.fromCharCode.apply(null, bytes));
+        
+        // ขั้นตอนที่ 3: นำ Base64 มาแปลงเป็นรหัสอังกฤษผสมตัวเลขที่สมบูรณ์แบบโดยการเข้ารหัสฐานสิบหกแบบสลับตำแหน่ง (Custom Hex-Shift)
+        let finalCode = "";
+        for (let i = 0; i < base64.length; i++) {
+            let charCode = base64.charCodeAt(i);
+            // ผสมตัวอักษรและตัวเลขเข้าด้วยกันแบบมีระเบียบ
+            finalCode += "MC" + charCode.toString(16).toUpperCase() + (i % 9);
+        }
+        return finalCode;
+    } catch (e) {
+        return "ERROR_TRANSFORM_FAILED";
+    }
+}
+
+function decodeUniversal(cipher) {
+    if (!cipher.trim()) return "";
+    try {
+        // ล้างช่องว่างที่อาจจะติดมาตอนก๊อปปี้
+        let cleanCipher = cipher.trim();
+        let base64 = "";
+        
+        // ถอดกลไก Hex-Shift กลับมาเป็นข้อความ Base64 ดั้งเดิม
+        let segments = cleanCipher.match(/MC[0-9A-F]{2}[0-8]/g);
+        if (!segments) throw new Error();
+        
+        for (let i = 0; i < segments.length; i++) {
+            let hex = segments[i].substring(2, 4);
+            let charCode = parseInt(hex, 16);
+            base64 += String.fromCharCode(charCode);
+        }
+        
+        // แปลง Base64 กลับเป็น UTF-8 และแปลงออกมาเป็นโค้ดดั้งเดิมที่มีความถูกต้อง 100%
+        let binaryStr = atob(base64);
+        let bytes = new Uint8Array(binaryStr.length);
+        for (let i = 0; i < binaryStr.length; i++) {
+            bytes[i] = binaryStr.charCodeAt(i);
+        }
+        return new TextDecoder().decode(bytes);
+    } catch (e) {
+        return "[❌ ข้อผิดพลาด: รหัสผสมตัวเลขนี้ไม่ถูกต้อง ถูกดัดแปลง หรือไม่ใช่รหัสที่เจนจากระบบนี้!]";
+    }
+}
+
+function transformCode(isEncode) {
+    const inputData = document.getElementById("rawInput").value;
+    const outputField = document.getElementById("secureOutput");
+    const status = document.getElementById("statusMessage");
+    
+    if (isEncode) {
+        let result = encodeUniversal(inputData);
+        outputField.value = result;
+        status.innerHTML = result.startsWith("ERROR") ? "🔴 เกิดข้อผิดพลาดในการประมวลผลโค้ด" : "🟢 สถานะ: แปลงโค้ดทุกภาษาเป็นรหัสอังกฤษผสมตัวเลขเรียบร้อยแล้ว!";
+    } else {
+        let result = decodeUniversal(inputData);
+        outputField.value = result;
+        status.innerHTML = result.includes("[❌") ? "🔴 ไม่สามารถถอดรหัสได้เนื่องจากโครงสร้างรหัสเสียหาย" : "🟢 สถานะ: ถอดรหัสคืนค่าซอร์สโค้ดเดิมสำเร็จแล้ว!";
+    }
+}
+
+function copyOutput() {
+    const outputField = document.getElementById("secureOutput");
+    if (!outputField.value) return;
+    outputField.select();
+    document.execCommand("copy");
+    document.getElementById("statusMessage").innerHTML = "🟢 สถานะ: คัดลอกรหัสลับลงคลิปบอร์ดแล้ว พร้อมนำไปแปะใช้งาน!";
+}
+
+function downloadOutput() {
+    const data = document.getElementById("secureOutput").value;
+    if (!data) return;
+    const blob = new Blob([data], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "mc-alphanumeric-" + Date.now() + ".txt";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    document.getElementById("statusMessage").innerHTML = "🟢 สถานะ: ดาวน์โหลดไฟล์รหัสลับข้อความสำเร็จ!";
+}
+</script>
+
+</body>
+</html>
