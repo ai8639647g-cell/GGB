@@ -1,0 +1,1743 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Code Shield V6 - Absolute Fix & Heavy Hyper-Engine</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        .neon-border-purple {
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.35);
+        }
+
+        .neon-border-emerald {
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.30);
+        }
+
+        .cyber-panel {
+            background: rgba(15, 23, 42, 0.90);
+            backdrop-filter: blur(12px);
+        }
+
+        .pulse-slow {
+            animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #020617;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+
+        textarea,
+        input,
+        select {
+            box-sizing: border-box;
+        }
+
+        .preview-frame {
+            background: white;
+            color: black;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            display: inline-block;
+            margin-right: 6px;
+            background: #10b981;
+            box-shadow: 0 0 10px rgba(16,185,129,.8);
+        }
+    </style>
+</head>
+
+<body id="mainBody"
+      class="bg-[#030712] text-slate-100 min-h-screen flex flex-col font-sans transition-colors duration-300">
+
+    <!-- ================= HEADER ================= -->
+    <header class="border-b border-purple-950/50 bg-[#0b0f19]/95 sticky top-0 z-50 shadow-2xl">
+
+        <div class="max-w-7xl mx-auto px-4 py-3.5 flex items-center justify-between gap-4">
+
+            <div class="flex items-center space-x-3 min-w-0">
+
+                <div class="bg-gradient-to-tr from-purple-600 via-indigo-600 to-cyan-500
+                            p-2.5 rounded-xl text-white shadow-xl shadow-indigo-500/20">
+                    <i class="fa-solid fa-server text-2xl animate-pulse"></i>
+                </div>
+
+                <div class="min-w-0">
+
+                    <div class="flex items-center space-x-2 flex-wrap">
+
+                        <h1 class="text-2xl font-black tracking-wider
+                                   bg-gradient-to-r from-purple-400 via-indigo-400 to-cyan-400
+                                   bg-clip-text text-transparent">
+                            CODE SHIELD PRO
+                        </h1>
+
+                        <span class="text-[10px] bg-cyan-950 border border-cyan-700
+                                     text-cyan-400 px-2 py-0.5 rounded
+                                     font-mono font-bold">
+                            V6.0 - FIX
+                        </span>
+
+                    </div>
+
+                    <p class="text-xs text-slate-400 font-mono">
+                        ระบบแปลงโค้ดเป็นตัวเลข • ระบบถอดรหัส • Live Preview • Fallback
+                    </p>
+
+                </div>
+
+            </div>
+
+            <!-- Theme -->
+            <div class="hidden sm:flex items-center space-x-2
+                        bg-slate-900/90 border border-slate-800
+                        px-3 py-1.5 rounded-xl text-xs">
+
+                <span class="text-slate-400 mr-1">
+                    <i class="fa-solid fa-palette"></i> ธีม:
+                </span>
+
+                <button onclick="changeTheme('cyber')"
+                        class="w-4 h-4 rounded-full bg-purple-600 border border-white"
+                        title="Cyber Dark"></button>
+
+                <button onclick="changeTheme('emerald')"
+                        class="w-4 h-4 rounded-full bg-emerald-600 border border-slate-700"
+                        title="Emerald Light"></button>
+
+                <button onclick="changeTheme('slate')"
+                        class="w-4 h-4 rounded-full bg-slate-800 border border-slate-700"
+                        title="Slate Deep"></button>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- ================= MAIN ================= -->
+    <main class="max-w-7xl mx-auto px-4 py-6 w-full flex-grow
+                 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+
+        <!-- ================= LEFT ================= -->
+        <div class="lg:col-span-5 flex flex-col gap-5">
+
+
+            <!-- INPUT CODE -->
+            <div class="cyber-panel border border-slate-800/80
+                        rounded-2xl p-5 shadow-2xl flex flex-col
+                        h-[300px] neon-border-purple">
+
+                <div class="flex items-center justify-between mb-2.5">
+
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-code text-purple-400"></i>
+
+                        <h2 class="text-sm font-bold text-slate-300">
+                            1. วางโค้ด HTML / CSS / JavaScript
+                        </h2>
+                    </div>
+
+                    <div id="inputStats"
+                         class="text-[10px] text-purple-400 font-mono">
+                        0 อักษร | 0.00 KB
+                    </div>
+
+                </div>
+
+                <textarea
+                    id="rawCodeInput"
+                    oninput="analyzeCodeSize()"
+                    placeholder="<!-- วางโค้ด HTML, CSS หรือ JavaScript ของคุณที่นี่ -->"
+                    class="w-full flex-grow bg-[#04060e]
+                           border border-slate-800 rounded-xl
+                           p-3 font-mono text-xs text-purple-300
+                           placeholder-slate-700
+                           focus:ring-1 focus:ring-purple-500
+                           focus:outline-none resize-none">
+                </textarea>
+
+                <div class="flex gap-2 mt-3">
+
+                    <button onclick="clearInput()"
+                            class="flex-1 bg-slate-800 hover:bg-slate-700
+                                   border border-slate-700 rounded-lg
+                                   py-2 text-xs text-slate-300">
+                        <i class="fa-solid fa-eraser"></i>
+                        ล้างโค้ด
+                    </button>
+
+                    <button onclick="pasteFromClipboard()"
+                            class="flex-1 bg-purple-950/60
+                                   hover:bg-purple-900
+                                   border border-purple-800
+                                   rounded-lg py-2 text-xs text-purple-300">
+                        <i class="fa-solid fa-paste"></i>
+                        วางจากคลิปบอร์ด
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- CONTROL PANEL -->
+            <div class="cyber-panel border border-slate-800/80
+                        rounded-2xl p-5 shadow-2xl flex flex-col gap-3.5">
+
+                <h2 class="text-sm font-bold text-slate-300 flex items-center space-x-2">
+                    <i class="fa-solid fa-gears text-indigo-400"></i>
+                    <span>2. ศูนย์ควบคุมและการตั้งค่าความปลอดภัย</span>
+                </h2>
+
+
+                <!-- LEVEL -->
+                <div class="bg-[#04060e] border border-slate-800
+                            p-2 rounded-xl">
+
+                    <label class="block text-[11px] text-slate-400
+                                  font-bold mb-1">
+                        ระดับการแปลงรหัส:
+                    </label>
+
+                    <select id="shieldLevel"
+                            class="w-full bg-slate-900
+                                   border border-slate-800
+                                   text-slate-200 text-xs
+                                   rounded-lg p-1.5
+                                   focus:outline-none
+                                   text-purple-400 cursor-pointer">
+
+                        <option value="1">
+                            Level 1: ASCII พื้นฐาน
+                        </option>
+
+                        <option value="2">
+                            Level 2: เพิ่มสมการคณิตศาสตร์
+                        </option>
+
+                        <option value="3">
+                            Level 3: เพิ่มตัวคูณข้อมูล
+                        </option>
+
+                        <option value="4">
+                            Level 4: โครงสร้างตัวเลขขั้นสูง
+                        </option>
+
+                        <option value="5">
+                            Level 5: Quantum Matrix + Noise
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- PASSWORD -->
+                <div class="bg-[#04060e]
+                            border border-slate-800
+                            p-2 rounded-xl">
+
+                    <label class="block text-[11px]
+                                  text-slate-400
+                                  font-bold mb-1">
+
+                        <i class="fa-solid fa-key text-amber-400"></i>
+
+                        รหัสผ่าน
+                        <span class="text-slate-600">
+                            (เลือกใส่ได้)
+                        </span>
+
+                    </label>
+
+                    <input
+                        type="password"
+                        id="codePassword"
+                        placeholder="ระบุรหัสผ่าน..."
+                        class="w-full bg-slate-900
+                               border border-slate-800
+                               text-xs rounded-lg p-1.5
+                               text-amber-300
+                               focus:outline-none
+                               focus:border-amber-500
+                               font-mono">
+
+                </div>
+
+
+                <!-- ACTION BUTTONS -->
+                <div class="grid grid-cols-2 gap-3">
+
+                    <button onclick="encryptProcess()"
+                            class="bg-gradient-to-r
+                                   from-purple-600 to-indigo-600
+                                   hover:from-purple-500
+                                   hover:to-indigo-500
+                                   text-white font-bold
+                                   py-3 px-4 rounded-xl
+                                   shadow-lg transition-all
+                                   flex flex-col items-center
+                                   justify-center gap-1
+                                   active:scale-[0.96]">
+
+                        <i class="fa-solid fa-lock text-base"></i>
+
+                        <span class="text-xs">
+                            ล็อกโค้ดเป็นเลข
+                        </span>
+
+                    </button>
+
+
+                    <button onclick="decryptProcess()"
+                            class="bg-gradient-to-r
+                                   from-cyan-600 to-emerald-600
+                                   hover:from-cyan-500
+                                   hover:to-emerald-500
+                                   text-white font-bold
+                                   py-3 px-4 rounded-xl
+                                   shadow-lg transition-all
+                                   flex flex-col items-center
+                                   justify-center gap-1
+                                   active:scale-[0.96]">
+
+                        <i class="fa-solid fa-play text-base"></i>
+
+                        <span class="text-xs">
+                            ถอดรหัส / ทดสอบ
+                        </span>
+
+                    </button>
+
+                </div>
+
+
+                <button onclick="resetAllEngines()"
+                        class="w-full bg-slate-800/60
+                               hover:bg-rose-950/40
+                               hover:text-rose-400
+                               border border-slate-700/60
+                               text-slate-400 py-2 rounded-xl
+                               text-xs font-semibold
+                               transition-all">
+
+                    <i class="fa-solid fa-trash-arrow-up"></i>
+
+                    ล้างหน้าจอทั้งหมด
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= RIGHT ================= -->
+        <div class="lg:col-span-7 flex flex-col gap-5">
+
+
+            <!-- NUMBER STORAGE -->
+            <div class="cyber-panel border border-slate-800/80
+                        rounded-2xl p-5 shadow-2xl
+                        flex flex-col h-[310px]
+                        neon-border-emerald">
+
+                <div class="flex flex-col sm:flex-row
+                            sm:items-center justify-between
+                            gap-2 mb-2.5">
+
+                    <div class="flex items-center space-x-2">
+
+                        <i class="fa-solid fa-calculator
+                                  text-emerald-400"></i>
+
+                        <h2 class="text-sm font-bold text-slate-300">
+                            3. คลังตัวเลขรหัส
+                        </h2>
+
+                    </div>
+
+
+                    <div class="flex items-center gap-1 flex-wrap">
+
+                        <label class="text-[11px]
+                                      bg-slate-800
+                                      border border-slate-700
+                                      text-slate-300
+                                      px-2.5 py-1.5
+                                      rounded-lg
+                                      hover:bg-slate-700
+                                      cursor-pointer">
+
+                            <i class="fa-solid fa-upload"></i>
+                            โหลดไฟล์
+
+                            <input
+                                type="file"
+                                id="txtImporter"
+                                accept=".txt,text/plain"
+                                class="hidden"
+                                onchange="loadTextFile(this)">
+
+                        </label>
+
+
+                        <button onclick="copyToClipboard()"
+                                class="text-[11px]
+                                       bg-cyan-950/70
+                                       border border-cyan-800
+                                       text-cyan-300
+                                       px-2.5 py-1.5
+                                       rounded-lg
+                                       hover:bg-cyan-600
+                                       hover:text-white">
+
+                            <i class="fa-solid fa-copy"></i>
+
+                            <span id="btnCopyText">
+                                คัดลอก
+                            </span>
+
+                        </button>
+
+
+                        <button onclick="saveAsTextFile()"
+                                class="text-[11px]
+                                       bg-purple-950/70
+                                       border border-purple-800
+                                       text-purple-300
+                                       px-2.5 py-1.5
+                                       rounded-lg
+                                       hover:bg-purple-600
+                                       hover:text-white">
+
+                            <i class="fa-solid fa-download"></i>
+
+                            เซฟไฟล์
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <textarea
+                    id="outputNumberArea"
+                    placeholder="ชุดตัวเลขจะแสดงตรงนี้..."
+                    class="w-full flex-grow
+                           bg-[#020617]
+                           border border-slate-800
+                           rounded-xl p-3
+                           font-mono text-[10px]
+                           text-emerald-300
+                           placeholder-slate-700
+                           focus:ring-1
+                           focus:ring-emerald-500
+                           focus:outline-none
+                           resize-none">
+                </textarea>
+
+            </div>
+
+
+            <!-- STATUS -->
+            <div class="cyber-panel
+                        border border-slate-800
+                        rounded-2xl p-4">
+
+                <div class="flex items-center justify-between">
+
+                    <div id="diagnoseStatus"
+                         class="text-xs font-mono text-slate-400">
+
+                        <span class="status-dot"></span>
+
+                        สถานะการทดสอบ:
+                        <span class="text-emerald-400 font-bold">
+                            พร้อมใช้งาน
+                        </span>
+
+                    </div>
+
+                    <button onclick="launchAbsoluteFullscreen()"
+                            class="bg-gradient-to-r
+                                   from-amber-500 to-orange-600
+                                   hover:from-amber-400
+                                   hover:to-orange-500
+                                   text-white text-xs
+                                   font-bold px-4 py-2
+                                   rounded-lg shadow-lg">
+
+                        <i class="fa-solid fa-up-right-from-square"></i>
+
+                        เปิดรันเต็มหน้าต่าง
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- LIVE SCREEN -->
+            <div class="cyber-panel border border-slate-800
+                        rounded-2xl p-5 shadow-2xl">
+
+                <div class="flex items-center justify-between mb-3">
+
+                    <div class="flex items-center gap-2">
+
+                        <i class="fa-solid fa-display text-cyan-400"></i>
+
+                        <h2 class="text-sm font-bold text-slate-300">
+                            4. หน้าจอทดสอบระบบแอปสด
+                        </h2>
+
+                    </div>
+
+                    <span class="text-[10px]
+                                 bg-emerald-950
+                                 border border-emerald-800
+                                 text-emerald-400
+                                 px-2 py-1 rounded">
+
+                        LIVE ENGINE
+
+                    </span>
+
+                </div>
+
+
+                <div class="border border-slate-800
+                            rounded-xl overflow-hidden
+                            bg-white">
+
+                    <iframe
+                        id="liveRenderFrame"
+                        title="Live Preview"
+                        sandbox="allow-scripts allow-forms allow-modals"
+                        class="preview-frame w-full h-[360px] border-0">
+                    </iframe>
+
+                </div>
+
+            </div>
+
+
+            <!-- FALLBACK -->
+            <div id="fallbackSection"
+                 class="hidden cyber-panel
+                        border border-amber-800/50
+                        rounded-2xl p-5 shadow-2xl">
+
+                <div class="flex items-center justify-between mb-3">
+
+                    <div class="flex items-center gap-2">
+
+                        <i class="fa-solid fa-shield-halved
+                                  text-amber-400"></i>
+
+                        <h2 class="text-sm font-bold text-slate-300">
+                            ระบบแสดงโค้ดกู้ภัย
+                        </h2>
+
+                    </div>
+
+                    <button onclick="copyFallbackCode()"
+                            class="text-[10px]
+                                   bg-slate-800
+                                   border border-slate-700
+                                   px-3 py-1.5 rounded-lg
+                                   text-slate-300">
+
+                        <i class="fa-solid fa-copy"></i>
+                        คัดลอกโค้ด
+
+                    </button>
+
+                </div>
+
+                <p class="text-[11px] text-slate-500 mb-3">
+                    ใช้สำหรับตรวจสอบโค้ดหลังถอดรหัส
+                    หรือใช้เป็นข้อมูลสำรองหาก Preview มีปัญหา
+                </p>
+
+                <pre id="fallbackCodeBox"
+                     class="bg-[#020617]
+                            border border-slate-800
+                            rounded-xl p-4
+                            text-[10px]
+                            text-emerald-300
+                            font-mono
+                            overflow-auto
+                            max-h-[350px]
+                            whitespace-pre-wrap">
+ไม่มีข้อมูลโค้ดสำรอง...
+                </pre>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="border-t border-slate-800
+                   bg-[#020617] py-4 mt-5">
+
+        <div class="max-w-7xl mx-auto px-4
+                    flex flex-col sm:flex-row
+                    justify-between gap-2
+                    text-[10px] text-slate-600 font-mono">
+
+            <span>
+                CODE SHIELD PRO V6.0
+            </span>
+
+            <span>
+                LOCAL PROCESSING ENGINE • NO SERVER REQUIRED
+            </span>
+
+        </div>
+
+    </footer>
+
+
+<script>
+/* =========================================================
+   CODE SHIELD PRO V6.0
+   FULL FIXED ENGINE
+   ========================================================= */
+
+"use strict";
+
+
+/* =========================================================
+   GLOBAL
+   ========================================================= */
+
+let globalDecodedHTML = "";
+
+const PLACEHOLDER_TEXT = "ชุดตัวเลขจะแสดงตรงนี้";
+
+
+/* =========================================================
+   DOM HELPER
+   ========================================================= */
+
+function $(id) {
+    return document.getElementById(id);
+}
+
+
+/* =========================================================
+   ANALYZE CODE SIZE
+   ========================================================= */
+
+function analyzeCodeSize() {
+
+    const input = $("rawCodeInput");
+    const stats = $("inputStats");
+
+    if (!input || !stats) return;
+
+    const value = input.value;
+
+    const characters = value.length;
+
+    const bytes = new Blob([value]).size;
+
+    const kilobytes = (bytes / 1024).toFixed(2);
+
+    stats.innerText =
+        `${characters.toLocaleString()} อักษร | ${kilobytes} KB`;
+}
+
+
+/* =========================================================
+   PASSWORD OFFSET
+   ========================================================= */
+
+function getPasswordOffset(password) {
+
+    if (!password) return 0;
+
+    let offset = 0;
+
+    for (let i = 0; i < password.length; i++) {
+        offset += password.charCodeAt(i);
+    }
+
+    return offset;
+}
+
+
+/* =========================================================
+   LEVEL SETTINGS
+   ========================================================= */
+
+function getLevelSettings(level) {
+
+    switch (String(level)) {
+
+        case "5":
+            return {
+                multiplier: 7,
+                shift: 109
+            };
+
+        case "4":
+            return {
+                multiplier: 4,
+                shift: 45
+            };
+
+        case "3":
+            return {
+                multiplier: 3,
+                shift: 5
+            };
+
+        case "2":
+            return {
+                multiplier: 2,
+                shift: 15
+            };
+
+        default:
+            return {
+                multiplier: 2,
+                shift: 5
+            };
+    }
+}
+
+
+/* =========================================================
+   ENCRYPT
+   ========================================================= */
+
+function encryptProcess() {
+
+    const rawCode = $("rawCodeInput").value;
+
+    const level = $("shieldLevel").value;
+
+    const password = $("codePassword").value;
+
+    const outputArea = $("outputNumberArea");
+
+
+    if (!rawCode.trim()) {
+
+        alert(
+            "โปรดใส่โค้ด HTML / CSS / JavaScript ก่อนครับ"
+        );
+
+        return;
+    }
+
+
+    const settings = getLevelSettings(level);
+
+    const hasPassword = password.length > 0;
+
+    const passOffset =
+        getPasswordOffset(password);
+
+
+    const encryptedArr = [];
+
+
+    /*
+       Header format:
+
+       V6-L1-N
+       V6-L2-P
+       V6-L5-P
+    */
+
+    encryptedArr.push(
+        `V6-L${level}-${hasPassword ? "P" : "N"}`
+    );
+
+
+    for (let i = 0; i < rawCode.length; i++) {
+
+        const charCode =
+            rawCode.charCodeAt(i);
+
+
+        let finalNum =
+            (charCode * settings.multiplier)
+            + settings.shift
+            + passOffset;
+
+
+        /*
+           Level 5 เพิ่ม noise
+           แต่ตัวเลขจริงยังอยู่ด้านหน้า
+        */
+
+        if (level === "5") {
+
+            const noise =
+                Math.floor(Math.random() * 90) + 10;
+
+            encryptedArr.push(
+                `${finalNum}.${noise}`
+            );
+
+        } else {
+
+            encryptedArr.push(
+                String(finalNum)
+            );
+
+        }
+    }
+
+
+    outputArea.value =
+        encryptedArr.join("-");
+
+
+    updateStatus(
+        "เข้ารหัสสมบูรณ์แล้ว",
+        "text-emerald-400 font-bold"
+    );
+}
+
+
+/* =========================================================
+   DECRYPT
+   ========================================================= */
+
+function decryptProcess() {
+
+    let numString =
+        $("outputNumberArea").value.trim();
+
+
+    if (!numString ||
+        numString.includes(PLACEHOLDER_TEXT)) {
+
+        alert(
+            "โปรดใส่ชุดตัวเลขในกล่องคลังรหัสก่อนครับ"
+        );
+
+        return;
+    }
+
+
+    const iframe =
+        $("liveRenderFrame");
+
+
+    const password =
+        $("codePassword").value;
+
+
+    const fallbackSection =
+        $("fallbackSection");
+
+
+    const fallbackBox =
+        $("fallbackCodeBox");
+
+
+    /*
+       ลบ whitespace ที่ไม่จำเป็น
+    */
+
+    numString =
+        numString.replace(/\s+/g, "");
+
+
+    const segments =
+        numString.split("-");
+
+
+    let level = "1";
+
+    let hasPass = "N";
+
+    let startIndex = 0;
+
+
+    /* =====================================================
+       V6 HEADER
+       ===================================================== */
+
+    if (segments[0].startsWith("V6-L")) {
+
+        const meta =
+            segments[0].split("-");
+
+
+        if (meta.length >= 3) {
+
+            level =
+                meta[1].replace("L", "");
+
+
+            hasPass =
+                meta[2];
+
+
+            startIndex = 1;
+
+        }
+
+    }
+
+    /*
+       รองรับ format เก่า
+    */
+
+    else if (segments[0].startsWith("L")) {
+
+        level =
+            segments[0].substring(1);
+
+        startIndex = 1;
+
+    }
+
+
+    /*
+       ตรวจสอบ level
+    */
+
+    if (!["1", "2", "3", "4", "5"].includes(level)) {
+
+        alert("ไม่พบระดับรหัสที่ถูกต้อง");
+
+        return;
+    }
+
+
+    /*
+       Password
+    */
+
+    let passOffset = 0;
+
+
+    if (hasPass === "P") {
+
+        if (!password) {
+
+            updateStatus(
+                "ต้องใส่รหัสผ่าน",
+                "text-rose-400 font-bold"
+            );
+
+            fallbackSection.classList.remove("hidden");
+
+            fallbackBox.textContent =
+                "รหัสนี้ถูกล็อกด้วยรหัสผ่าน กรุณาใส่รหัสผ่านให้ถูกต้อง";
+
+            return;
+        }
+
+
+        passOffset =
+            getPasswordOffset(password);
+    }
+
+
+    const settings =
+        getLevelSettings(level);
+
+
+    try {
+
+        let decodedHTML = "";
+
+
+        for (
+            let i = startIndex;
+            i < segments.length;
+            i++
+        ) {
+
+            const part = segments[i];
+
+            if (!part) continue;
+
+
+            let rawNum =
+                Number(part);
+
+
+            if (!Number.isFinite(rawNum)) {
+
+                throw new Error(
+                    "พบข้อมูลตัวเลขที่ไม่ถูกต้อง"
+                );
+
+            }
+
+
+            /*
+               Level 5:
+               ตัด noise หลังจุดทศนิยม
+            */
+
+            if (level === "5") {
+
+                rawNum =
+                    Math.floor(rawNum);
+            }
+
+
+            const charVal =
+                (
+                    rawNum
+                    - settings.shift
+                    - passOffset
+                )
+                / settings.multiplier;
+
+
+            const charCode =
+                Math.round(charVal);
+
+
+            /*
+               ป้องกันค่าผิดปกติ
+            */
+
+            if (
+                charCode < 0 ||
+                charCode > 65535
+            ) {
+
+                throw new Error(
+                    "ข้อมูลรหัสผ่านหรือ Level ไม่ตรงกัน"
+                );
+
+            }
+
+
+            decodedHTML +=
+                String.fromCharCode(charCode);
+        }
+
+
+        if (!decodedHTML) {
+
+            throw new Error(
+                "ไม่สามารถถอดรหัสได้"
+            );
+        }
+
+
+        /*
+           เก็บผลลัพธ์ไว้ Global
+        */
+
+        globalDecodedHTML =
+            decodedHTML;
+
+
+        /*
+           Preview
+        */
+
+        const iframeDoc =
+            iframe.contentDocument ||
+            iframe.contentWindow.document;
+
+
+        iframeDoc.open();
+
+        iframeDoc.write(decodedHTML);
+
+        iframeDoc.close();
+
+
+        /*
+           Fallback
+        */
+
+        fallbackSection.classList.remove(
+            "hidden"
+        );
+
+        fallbackBox.textContent =
+            decodedHTML;
+
+
+        updateStatus(
+            "ถอดรหัสสำเร็จ • Live Preview พร้อมใช้งาน",
+            "text-cyan-400 font-bold"
+        );
+
+
+    } catch (error) {
+
+        console.error(error);
+
+
+        globalDecodedHTML = "";
+
+
+        updateStatus(
+            "รหัสขัดข้อง / Password หรือ Level ไม่ถูกต้อง",
+            "text-rose-400 font-bold"
+        );
+
+
+        fallbackSection.classList.remove(
+            "hidden"
+        );
+
+
+        fallbackBox.textContent =
+            "ระบบไม่สามารถถอดรหัสได้\n\n" +
+            "สาเหตุที่เป็นไปได้:\n" +
+            "1. รหัสผ่านไม่ถูกต้อง\n" +
+            "2. Level ไม่ตรงกับตอนเข้ารหัส\n" +
+            "3. ชุดตัวเลขเสียหาย\n" +
+            "4. ไฟล์ถูกแก้ไขระหว่างทาง";
+    }
+}
+
+
+/* =========================================================
+   FULLSCREEN / NEW WINDOW
+   ========================================================= */
+
+function launchAbsoluteFullscreen() {
+
+    /*
+       ถ้ายังไม่ได้ถอดรหัส
+       ให้ลองถอดก่อน
+    */
+
+    if (!globalDecodedHTML) {
+
+        const currentNum =
+            $("outputNumberArea").value.trim();
+
+
+        if (
+            currentNum &&
+            !currentNum.includes(PLACEHOLDER_TEXT)
+        ) {
+
+            decryptProcess();
+        }
+    }
+
+
+    if (!globalDecodedHTML) {
+
+        alert(
+            "ไม่มีโค้ดสำหรับเปิดใช้งาน\n\n" +
+            "กรุณาใส่ชุดตัวเลขแล้วกดถอดรหัสก่อน"
+        );
+
+        return;
+    }
+
+
+    try {
+
+        /*
+           Blob URL
+        */
+
+        const blob =
+            new Blob(
+                [globalDecodedHTML],
+                {
+                    type:
+                        "text/html;charset=utf-8"
+                }
+            );
+
+
+        const blobUrl =
+            URL.createObjectURL(blob);
+
+
+        /*
+           window.open อาจถูก browser block
+           ถ้าไม่ได้เกิดจาก user gesture
+        */
+
+        const win =
+            window.open(
+                blobUrl,
+                "_blank"
+            );
+
+
+        if (!win) {
+
+            throw new Error(
+                "Pop-up blocked"
+            );
+        }
+
+
+        updateStatus(
+            "เปิดหน้าเว็บทดสอบในแท็บใหม่แล้ว",
+            "text-amber-400 font-bold"
+        );
+
+
+        /*
+           ไม่ revoke ทันที
+           เพื่อให้หน้าใหม่ยังเปิดได้
+        */
+
+        setTimeout(() => {
+
+            URL.revokeObjectURL(blobUrl);
+
+        }, 60000);
+
+
+    } catch (error) {
+
+        console.warn(error);
+
+
+        $("fallbackSection")
+            .classList
+            .remove("hidden");
+
+
+        alert(
+            "เบราว์เซอร์บล็อกการเปิดแท็บใหม่\n\n" +
+            "สามารถใช้ Live Preview และ Fallback " +
+            "ด้านล่างแทนได้"
+        );
+    }
+}
+
+
+/* =========================================================
+   STATUS
+   ========================================================= */
+
+function updateStatus(text, cssClass) {
+
+    const status =
+        $("diagnoseStatus");
+
+
+    if (!status) return;
+
+
+    status.innerHTML =
+        `<span class="status-dot"></span>
+         สถานะการทดสอบ:
+         <span class="${cssClass}">
+         ${escapeHTML(text)}
+         </span>`;
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+   ========================================================= */
+
+function escapeHTML(text) {
+
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+/* =========================================================
+   THEME
+   ========================================================= */
+
+function changeTheme(mode) {
+
+    const body =
+        $("mainBody");
+
+
+    if (mode === "emerald") {
+
+        body.className =
+            "bg-slate-100 text-slate-900 " +
+            "min-h-screen flex flex-col font-sans " +
+            "transition-colors duration-300";
+
+    }
+
+    else if (mode === "slate") {
+
+        body.className =
+            "bg-[#0f172a] text-slate-200 " +
+            "min-h-screen flex flex-col font-sans " +
+            "transition-colors duration-300";
+
+    }
+
+    else {
+
+        body.className =
+            "bg-[#030712] text-slate-100 " +
+            "min-h-screen flex flex-col font-sans " +
+            "transition-colors duration-300";
+    }
+
+
+    updateStatus(
+        `เปลี่ยนธีมเป็น ${mode}`,
+        "text-purple-400 font-bold"
+    );
+}
+
+
+/* =========================================================
+   LOAD TXT FILE
+   ========================================================= */
+
+function loadTextFile(input) {
+
+    const file =
+        input.files &&
+        input.files[0];
+
+
+    if (!file) return;
+
+
+    const reader =
+        new FileReader();
+
+
+    reader.onload =
+        function(event) {
+
+            $("outputNumberArea").value =
+                event.target.result;
+
+
+            updateStatus(
+                "โหลดไฟล์สำเร็จ",
+                "text-amber-400 font-bold"
+            );
+
+
+            /*
+               ไม่ถอดรหัสอัตโนมัติ
+               เพื่อป้องกันการทำงานโดยไม่ตั้งใจ
+            */
+
+        };
+
+
+    reader.onerror =
+        function() {
+
+            alert(
+                "ไม่สามารถอ่านไฟล์ได้"
+            );
+
+        };
+
+
+    reader.readAsText(file);
+}
+
+
+/* =========================================================
+   SAVE TXT
+   ========================================================= */
+
+function saveAsTextFile() {
+
+    const content =
+        $("outputNumberArea")
+        .value
+        .trim();
+
+
+    if (
+        !content ||
+        content.includes(PLACEHOLDER_TEXT)
+    ) {
+
+        alert(
+            "ไม่มีชุดตัวเลขสำหรับบันทึก"
+        );
+
+        return;
+    }
+
+
+    const blob =
+        new Blob(
+            [content],
+            {
+                type:
+                    "text/plain;charset=utf-8"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(blob);
+
+
+    const a =
+        document.createElement("a");
+
+
+    a.href = url;
+
+    a.download =
+        "secured-numbers-v6.txt";
+
+
+    document.body.appendChild(a);
+
+    a.click();
+
+    document.body.removeChild(a);
+
+
+    setTimeout(() => {
+
+        URL.revokeObjectURL(url);
+
+    }, 1000);
+
+
+    updateStatus(
+        "บันทึกไฟล์สำเร็จ",
+        "text-emerald-400 font-bold"
+    );
+}
+
+
+/* =========================================================
+   COPY NUMBER
+   ========================================================= */
+
+async function copyToClipboard() {
+
+    const value =
+        $("outputNumberArea").value;
+
+
+    if (
+        !value ||
+        value.includes(PLACEHOLDER_TEXT)
+    ) {
+
+        return;
+    }
+
+
+    try {
+
+        await navigator.clipboard.writeText(
+            value
+        );
+
+
+        const button =
+            $("btnCopyText");
+
+
+        button.innerText =
+            "คัดลอกแล้ว!";
+
+
+        setTimeout(() => {
+
+            button.innerText =
+                "คัดลอก";
+
+        }, 2000);
+
+
+    } catch (error) {
+
+        /*
+           Fallback สำหรับ browser
+           ที่ไม่อนุญาต Clipboard API
+        */
+
+        $("outputNumberArea").select();
+
+        document.execCommand("copy");
+
+
+        alert(
+            "คัดลอกชุดตัวเลขแล้ว"
+        );
+    }
+}
+
+
+/* =========================================================
+   COPY FALLBACK
+   ========================================================= */
+
+async function copyFallbackCode() {
+
+    const code =
+        $("fallbackCodeBox").textContent;
+
+
+    if (
+        !code ||
+        code === "ไม่มีข้อมูลโค้ดสำรอง..."
+    ) {
+
+        return;
+    }
+
+
+    try {
+
+        await navigator.clipboard.writeText(
+            code
+        );
+
+
+        alert(
+            "คัดลอกโค้ดกู้ภัยแล้ว"
+        );
+
+    } catch (error) {
+
+        alert(
+            "ไม่สามารถคัดลอกอัตโนมัติได้"
+        );
+    }
+}
+
+
+/* =========================================================
+   CLEAR INPUT
+   ========================================================= */
+
+function clearInput() {
+
+    $("rawCodeInput").value = "";
+
+    analyzeCodeSize();
+
+    updateStatus(
+        "ล้างโค้ดต้นฉบับแล้ว",
+        "text-slate-400 font-bold"
+    );
+}
+
+
+/* =========================================================
+   PASTE CLIPBOARD
+   ========================================================= */
+
+async function pasteFromClipboard() {
+
+    try {
+
+        const text =
+            await navigator.clipboard.readText();
+
+
+        if (!text) {
+
+            alert(
+                "ไม่พบข้อความในคลิปบอร์ด"
+            );
+
+            return;
+        }
+
+
+        $("rawCodeInput").value =
+            text;
+
+
+        analyzeCodeSize();
+
+
+        updateStatus(
+            "วางโค้ดจากคลิปบอร์ดแล้ว",
+            "text-cyan-400 font-bold"
+        );
+
+
+    } catch (error) {
+
+        alert(
+            "เบราว์เซอร์ไม่อนุญาตให้อ่านคลิปบอร์ด\n" +
+            "กรุณาวางโค้ดด้วย Ctrl+V หรือเมนูวาง"
+        );
+    }
+}
+
+
+/* =========================================================
+   RESET EVERYTHING
+   ========================================================= */
+
+function resetAllEngines() {
+
+    $("rawCodeInput").value = "";
+
+    $("outputNumberArea").value = "";
+
+    $("codePassword").value = "";
+
+    $("shieldLevel").value = "1";
+
+
+    globalDecodedHTML = "";
+
+
+    analyzeCodeSize();
+
+
+    /*
+       Clear iframe
+    */
+
+    const iframe =
+        $("liveRenderFrame");
+
+
+    try {
+
+        const iframeDoc =
+            iframe.contentDocument ||
+            iframe.contentWindow.document;
+
+
+        iframeDoc.open();
+
+        iframeDoc.write("");
+
+        iframeDoc.close();
+
+    } catch (error) {
+
+        console.warn(
+            "Unable to clear iframe",
+            error
+        );
+    }
+
+
+    /*
+       Clear fallback
+    */
+
+    $("fallbackSection")
+        .classList
+        .add("hidden");
+
+
+    $("fallbackCodeBox")
+        .textContent =
+        "ไม่มีข้อมูลโค้ดสำรอง...";
+
+
+    /*
+       Reset file picker
+    */
+
+    $("txtImporter").value = "";
+
+
+    updateStatus(
+        "ล้างค่าทั้งหมดแล้ว",
+        "text-slate-500 font-bold"
+    );
+}
+
+
+/* =========================================================
+   KEYBOARD SHORTCUT
+   ========================================================= */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        /*
+           Ctrl + Enter
+           = ถอดรหัส / Preview
+        */
+
+        if (
+            event.ctrlKey &&
+            event.key === "Enter"
+        ) {
+
+            event.preventDefault();
+
+            decryptProcess();
+        }
+
+    }
+);
+
+
+/* =========================================================
+   INITIALIZE
+   ========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        analyzeCodeSize();
+
+        updateStatus(
+            "พร้อมใช้งาน",
+            "text-emerald-400 font-bold"
+        );
+
+    }
+);
+
+</script>
+
+</body>
+</html>
